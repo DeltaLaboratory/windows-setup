@@ -5,7 +5,6 @@ $progressIdMain = 1
 Invoke-RestMethod -Uri "https://raw.githubusercontent.com/DeltaLaboratory/windows-setup/refs/heads/main/modules/utils.ps1" | Invoke-Expression
 if ($LASTEXITCODE -ne 0 -or !$?) {
     Write-Error "Failed to load utils.ps1"
-    Write-Progress -Activity "Main Setup Progress" -Status "Failed to load utils.ps1" -Completed -Id $progressIdMain # Mark as completed to remove
     Read-Host "Press Enter to acknowledge this error and exit..."
     exit 1
 }
