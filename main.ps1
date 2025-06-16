@@ -14,8 +14,6 @@ $mainTotalSteps = 8
 $mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Starting System Registry Configuration..." -PercentComplete (($mainCurrentStep / $mainTotalSteps) * 100) -Id $progressIdMain
 I "Starting Configuration..."
 
-$ErrorActionPreference = "Stop" # Stop script on any error
-
 try {
     $mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Configuring System Registry..." -PercentComplete (($mainCurrentStep / $mainTotalSteps) * 100) -Id $progressIdMain
     Invoke-RestMethod -Uri "https://raw.githubusercontent.com/DeltaLaboratory/windows-setup/refs/heads/main/configure/registry/system.ps1" | Invoke-Expression
