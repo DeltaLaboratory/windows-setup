@@ -1,14 +1,8 @@
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 
-$progressIdMain = 1
-
 Invoke-RestMethod -Uri "https://raw.githubusercontent.com/DeltaLaboratory/windows-setup/refs/heads/main/modules/utils.ps1" | Invoke-Expression
-if ($LASTEXITCODE -ne 0 -or !$?) {
-    Write-Error "Failed to load utils.ps1"
-    Read-Host "Press Enter to acknowledge this error and exit..."
-    exit 1
-}
 
+$progressIdMain = 1
 $mainCurrentStep = 0
 $mainTotalSteps = 8
 

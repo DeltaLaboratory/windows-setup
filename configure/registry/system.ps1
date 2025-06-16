@@ -1,4 +1,3 @@
-\
 $systemTotalSteps = 11
 $systemCurrentStep = 0
 $progressIdSystem = 2 # Using a specific ID for this script's progress bar
