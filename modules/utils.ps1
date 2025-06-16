@@ -88,10 +88,4 @@ function Set-RegistryString {
 
 $Host.UI.RawUI.BackgroundColor = 'Black'
 $Host.UI.RawUI.ForegroundColor = 'White'
-$Host.UI.RawUI.ErrorForegroundColor = 'Red'
-$Host.UI.RawUI.WarningForegroundColor = 'Yellow'
-$Host.UI.RawUI.DebugForegroundColor = 'Gray'
-$Host.UI.RawUI.VerboseForegroundColor = 'Gray'
-$Host.UI.RawUI.ProgressForegroundColor = 'Yellow'
-$Host.UI.RawUI.ProgressBackgroundColor = 'DarkGray'
 Clear-Host
