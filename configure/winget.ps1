@@ -15,7 +15,7 @@ if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
     $vcLibsUrl = "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
     $vcLibsInstallerPath = "$env:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx"
     try {
-        Invoke-WebRequest -Uri $vcLibsUrl -OutFile $vcLibsInstallerPath -ErrorAction Stop
+        (New-Object Net.WebClient).DownloadFile($vcLibsUrl, $vcLibsInstallerPath)
         Add-AppxPackage -Path $vcLibsInstallerPath -ErrorAction Stop
         I "Microsoft VCLibs Desktop Framework Package Installed Successfully!"
     } catch {
@@ -29,7 +29,7 @@ if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
     $wingetInstallerUrl = "https://aka.ms/getwinget"
     $installerPath = "$env:TEMP\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.appxbundle"
     try {
-        Invoke-WebRequest -Uri $wingetInstallerUrl -OutFile $installerPath -ErrorAction Stop
+        (New-Object Net.WebClient).DownloadFile($wingetInstallerUrl, $installerPath)
         Add-AppxPackage -Path $installerPath -ErrorAction Stop
         I "Winget Installed Successfully!"
     } catch {
