@@ -9,7 +9,7 @@ I "Installing Scoop..."
 Invoke-Expression "& {$(Invoke-RestMethod https://get.scoop.sh)} -RunAsAdmin"
 if ($LASTEXITCODE -ne 0) {
     E "Error installing Scoop. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "Scoop installation failed. Exit code: $LASTEXITCODE"
 } else {
     I "Scoop Installed Successfully!"
 }
@@ -18,7 +18,7 @@ I "Updating Scoop..."
 scoop update *
 if ($LASTEXITCODE -ne 0) {
     E "Error updating Scoop. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "Scoop update failed. Exit code: $LASTEXITCODE"
 } else {
     I "Scoop Updated Successfully!"
 }
@@ -27,7 +27,7 @@ I "Configuring Scoop to use SQLite DB..."
 scoop config use_sqlite_cache true
 if ($LASTEXITCODE -ne 0) {
     E "Error configuring Scoop to use SQLite DB. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "Scoop SQLite configuration failed. Exit code: $LASTEXITCODE"
 } else {
     I "Scoop Configured to use SQLite DB Successfully!"
 }
@@ -37,7 +37,7 @@ I "Installing Git via Scoop..."
 scoop install git
 if ($LASTEXITCODE -ne 0) {
     E "Error installing Git. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "Git installation via Scoop failed. Exit code: $LASTEXITCODE"
 } else {
     I "Git Installed Successfully!"
 }
@@ -50,7 +50,7 @@ I "Installing Git-LFS via Scoop..."
 scoop install git-lfs
 if ($LASTEXITCODE -ne 0) {
     E "Error installing Git-LFS. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "Git-LFS installation via Scoop failed. Exit code: $LASTEXITCODE"
 } else {
     I "Git-LFS Installed Successfully!"
 }
@@ -82,7 +82,7 @@ I "Setting up Scoop Extras Bucket..."
 scoop bucket add extras
 if ($LASTEXITCODE -ne 0) {
     E "Error setting up Scoop Extras Bucket. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "Scoop Extras Bucket setup failed. Exit code: $LASTEXITCODE"
 } else {
     I "Scoop Extras Bucket Setup Completed Successfully!"
 }
@@ -92,7 +92,7 @@ I "Setting up Scoop Nerd Font Bucket..."
 scoop bucket add nerd-fonts
 if ($LASTEXITCODE -ne 0) {
     E "Error setting up Scoop Nerd Font Bucket. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "Scoop Nerd Font Bucket setup failed. Exit code: $LASTEXITCODE"
 } else {
     I "Scoop Nerd Font Bucket Setup Completed Successfully!"
 }
@@ -103,14 +103,14 @@ I "Install IBM Flex Mono & KR..."
 scoop install IBMPlexMono
 if ($LASTEXITCODE -ne 0) {
     E "Error installing IBMPlexMono. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "IBMPlexMono installation via Scoop failed. Exit code: $LASTEXITCODE"
 } else {
     I "IBMPlexMono Installed Successfully!"
 }
 scoop install IBMPlexSans-KR
 if ($LASTEXITCODE -ne 0) {
     E "Error installing IBMPlexSans-KR. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "IBMPlexSans-KR installation via Scoop failed. Exit code: $LASTEXITCODE"
 } else {
     I "IBMPlexSans-KR Installed Successfully!"
 }
@@ -121,7 +121,7 @@ I "Installing Go via Scoop..."
 scoop install go
 if ($LASTEXITCODE -ne 0) {
     E "Error installing Go. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "Go installation via Scoop failed. Exit code: $LASTEXITCODE"
 } else {
     I "Go Installed Successfully!"
 }
@@ -132,7 +132,7 @@ I "Installing Node.js via Scoop..."
 scoop install nodejs
 if ($LASTEXITCODE -ne 0) {
     E "Error installing Node.js. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "Node.js installation via Scoop failed. Exit code: $LASTEXITCODE"
 } else {
     I "Node.js Installed Successfully!"
 }
@@ -143,14 +143,14 @@ I "Enabling Corepack..."
 corepack enable
 if ($LASTEXITCODE -ne 0) {
     E "Error enabling Corepack. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "Corepack enable failed. Exit code: $LASTEXITCODE"
 } else {
     I "Corepack Enabled Successfully!"
 }
 corepack install pnpm@latest -g
 if ($LASTEXITCODE -ne 0) {
     E "Error installing pnpm. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "pnpm installation via Corepack failed. Exit code: $LASTEXITCODE"
 } else {
     I "pnpm Installed Successfully!"
 }
@@ -162,7 +162,7 @@ I "Installing Python via Scoop..."
 scoop install python
 if ($LASTEXITCODE -ne 0) {
     E "Error installing Python. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "Python installation via Scoop failed. Exit code: $LASTEXITCODE"
 } else {
     I "Python Installed Successfully!"
 }
@@ -173,7 +173,7 @@ I "Installing Poetry..."
 scoop install poetry
 if ($LASTEXITCODE -ne 0) {
     E "Error installing Poetry. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "Poetry installation via Scoop failed. Exit code: $LASTEXITCODE"
 } else {
     I "Poetry Installed Successfully!"
 }
@@ -185,7 +185,7 @@ I "Installing gpg via Scoop..."
 scoop install gpg
 if ($LASTEXITCODE -ne 0) {
     E "Error installing gpg. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "gpg installation via Scoop failed. Exit code: $LASTEXITCODE"
 } else {
     I "gpg Installed Successfully!"
 }
@@ -196,7 +196,7 @@ I "Installing Github CLI via Scoop..."
 scoop install gh
 if ($LASTEXITCODE -ne 0) {
     E "Error installing Github CLI. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "Github CLI installation via Scoop failed. Exit code: $LASTEXITCODE"
 } else {
     I "Github CLI Installed Successfully!"
 }
@@ -207,7 +207,7 @@ I "Installing MSYS2 via Scoop..."
 scoop install msys2
 if ($LASTEXITCODE -ne 0) {
     E "Error installing MSYS2. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "MSYS2 installation via Scoop failed. Exit code: $LASTEXITCODE"
 } else {
     I "MSYS2 Installed Successfully!"
 }
@@ -217,14 +217,17 @@ I "Setting up MSYS2..."
 &"C:\\Users\\$env:USERNAME\\scoop\\apps\\msys2\\current\\msys2_shell.cmd" -defterm -no-start -here -mingw64 -full-path -c "pacman -Syuu --noconfirm"
 if ($LASTEXITCODE -ne 0) {
     E "Error during MSYS2 setup (pacman -Syuu). Exit code: $LASTEXITCODE"
+    throw "MSYS2 setup (pacman -Syuu) failed. Exit code: $LASTEXITCODE"
 }
 &"C:\\Users\\$env:USERNAME\\scoop\\apps\\msys2\\current\\msys2_shell.cmd" -defterm -no-start -here -mingw64 -full-path -c "pacman -Syuu --noconfirm"
 if ($LASTEXITCODE -ne 0) {
     E "Error during MSYS2 setup (pacman -Syuu, second run). Exit code: $LASTEXITCODE"
+    throw "MSYS2 setup (pacman -Syuu, second run) failed. Exit code: $LASTEXITCODE"
 }
 &"C:\\Users\\$env:USERNAME\\scoop\\apps\\msys2\\current\\msys2_shell.cmd" -defterm -no-start -here -ucrt64 -full-path -c "pacman -S --needed --noconfirm mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-toolchain"
 if ($LASTEXITCODE -ne 0) {
     E "Error during MSYS2 setup (pacman -S toolchain). Exit code: $LASTEXITCODE"
+    throw "MSYS2 setup (pacman -S toolchain) failed. Exit code: $LASTEXITCODE"
 }
 
 # Create MSYS2 Setup Batch File at Document Directory
@@ -245,7 +248,7 @@ I "Installing Notepad++ via Scoop..."
 scoop install notepadplusplus
 if ($LASTEXITCODE -ne 0) {
     E "Error installing Notepad++. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "Notepad++ installation via Scoop failed. Exit code: $LASTEXITCODE"
 } else {
     I "Notepad++ Installed Successfully!"
 }
@@ -256,7 +259,7 @@ I "Installing SMPlayer via Scoop..."
 scoop install extras/smplayer
 if ($LASTEXITCODE -ne 0) {
     E "Error installing SMPlayer. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "SMPlayer installation via Scoop failed. Exit code: $LASTEXITCODE"
 } else {
     I "SMPlayer Installed Successfully!"
 }

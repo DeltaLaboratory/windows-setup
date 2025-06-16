@@ -32,7 +32,7 @@ I "Upgrading Windows Package Manager (Winget)..."
 winget upgrade --all --include-unknown --accept-package-agreements --accept-source-agreements
 if ($LASTEXITCODE -ne 0) {
     E "Error upgrading Winget packages. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "Winget upgrade failed. Exit code: $LASTEXITCODE"
 } else {
     I "Windows Package Manager (Winget) Upgraded Successfully!"
 }
@@ -44,7 +44,7 @@ I "Installing Bandizip via Winget..."
 winget install Bandisoft.Bandizip --accept-package-agreements --accept-source-agreements
 if ($LASTEXITCODE -ne 0) {
     E "Error installing Bandizip. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "Bandizip installation failed. Exit code: $LASTEXITCODE"
 } else {
     I "Bandizip Installed Successfully!"
 }
@@ -56,7 +56,7 @@ I "Installing Bandiview via Winget..."
 winget install Bandisoft.Bandiview --accept-package-agreements --accept-source-agreements
 if ($LASTEXITCODE -ne 0) {
     E "Error installing Bandiview. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "Bandiview installation failed. Exit code: $LASTEXITCODE"
 } else {
     I "Bandiview Installed Successfully!"
 }
@@ -68,7 +68,7 @@ I "Installing JetBrains Toolbox via Winget..."
 winget install JetBrains.Toolbox --accept-package-agreements --accept-source-agreements
 if ($LASTEXITCODE -ne 0) {
     E "Error installing JetBrains Toolbox. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "JetBrains Toolbox installation failed. Exit code: $LASTEXITCODE"
 } else {
     I "JetBrains Toolbox Installed Successfully!"
 }
@@ -80,7 +80,7 @@ I "Installing Powershell 7 via Winget..."
 winget install Microsoft.PowerShell --accept-package-agreements --accept-source-agreements
 if ($LASTEXITCODE -ne 0) {
     E "Error installing Powershell 7. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "Powershell 7 installation failed. Exit code: $LASTEXITCODE"
 } else {
     I "Powershell 7 Installed Successfully!"
 }
@@ -92,7 +92,7 @@ I "Installing Snipping Tool via Winget..."
 winget install 9MZ95KL8MR0L --accept-package-agreements --accept-source-agreements
 if ($LASTEXITCODE -ne 0) {
     E "Error installing Snipping Tool. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "Snipping Tool installation failed. Exit code: $LASTEXITCODE"
 } else {
     I "Snipping Tool Installed Successfully!"
 }
@@ -103,7 +103,7 @@ I "Installing PowerToys via Winget..."
 winget install Microsoft.Powertoys --accept-package-agreements --accept-source-agreements
 if ($LASTEXITCODE -ne 0) {
     E "Error installing PowerToys. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
+    throw "PowerToys installation failed. Exit code: $LASTEXITCODE"
 } else {
     I "PowerToys Installed Successfully!"
 }

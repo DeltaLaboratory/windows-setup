@@ -3,6 +3,7 @@ Invoke-RestMethod -Uri "https://raw.githubusercontent.com/DeltaLaboratory/window
 if ($LASTEXITCODE -ne 0 -or !$?) {
     Write-Error "Failed to load utils.ps1"
     Write-Progress -Activity "Main Setup Progress" -Status "Failed to load utils.ps1" -Completed -Id $progressIdMain # Mark as completed to remove
+    Read-Host "Press Enter to acknowledge this error and exit..."
     exit 1
 }
 
@@ -39,6 +40,7 @@ try {
 } catch {
     E "An error occurred during script execution: $($_.Exception.Message)"
     Write-Progress -Activity "Main Setup Progress" -Status "Error during script execution" -Completed -Id $progressIdMain # Mark as completed to remove
+    Read-Host "Press Enter to acknowledge this error and exit..."
     exit 1
 }
 
@@ -48,6 +50,7 @@ Start-Process powershell.exe -ArgumentList "-NoExit -ExecutionPolicy Bypass -Com
 if ($LASTEXITCODE -ne 0) {
     E "Error executing scoop.ps1. Exit code: $LASTEXITCODE"
     Write-Progress -Activity "Main Setup Progress" -Status "Error executing scoop.ps1" -Completed -Id $progressIdMain # Mark as completed to remove
+    Read-Host "Press Enter to acknowledge this error and exit..."
     exit 1
 }
 
