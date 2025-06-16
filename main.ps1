@@ -6,6 +6,10 @@ if ($LASTEXITCODE -ne 0 -or !$?) {
     exit 1
 }
 
+$progressIdMain = 1 # Unique ID for main script's progress bar
+$mainCurrentStep = 0
+$mainTotalSteps = 8
+
 $mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Starting System Registry Configuration..." -PercentComplete (($mainCurrentStep / $mainTotalSteps) * 100) -Id $progressIdMain
 I "Starting Configuration..."
 
