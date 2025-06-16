@@ -7,8 +7,25 @@ I $statusMessage
 
 # Ensure Winget is installed
 if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-    $statusMessage = "Winget not found. Installing Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete (($wingetCurrentStep / $wingetTotalSteps) * 100) -Id $progressIdWinget
-    I $statusMessage
+    $statusMessage = "Winget not found. Installing prerequisites and Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete (($wingetCurrentStep / $wingetTotalSteps) * 100) -Id $progressIdWinget
+    I "Winget not found. Installing prerequisites and Winget..."
+
+    # Install VCLibs as a prerequisite
+    I "Installing Microsoft VCLibs Desktop Framework Package (prerequisite for Winget)..."
+    $vcLibsUrl = "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
+    $vcLibsInstallerPath = "$env:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx"
+    try {
+        Invoke-WebRequest -Uri $vcLibsUrl -OutFile $vcLibsInstallerPath -ErrorAction Stop
+        Add-AppxPackage -Path $vcLibsInstallerPath -ErrorAction Stop
+        I "Microsoft VCLibs Desktop Framework Package Installed Successfully!"
+    } catch {
+        E "Error installing Microsoft VCLibs Desktop Framework Package: $($_.Exception.Message)"
+        Write-Progress -Activity "Winget Package Management" -Status "Error installing VCLibs prerequisite" -Completed -Id $progressIdWinget
+        throw $_ # Re-throw to be caught by main.ps1
+    }
+
+    # Install Winget
+    I "Installing Winget..."
     $wingetInstallerUrl = "https://aka.ms/getwinget"
     $installerPath = "$env:TEMP\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.appxbundle"
     try {
