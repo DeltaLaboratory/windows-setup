@@ -20,8 +20,8 @@ Set-RegistryString -Path "HKCU:\\Software\\Microsoft\\PowerShell\\1\\ShellIds\\M
 $systemCurrentStep++; $statusMessage = "Setting Registry: Explorer Advanced Settings..."; Write-Progress -Activity "System Registry Configuration" -Status $statusMessage -PercentComplete (($systemCurrentStep / $systemTotalSteps) * 100) -Id $progressIdSystem
 I $statusMessage
 Set-RegistryDword -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced" -Name "HideDrivesWithNoMedia" -Value 0
-Set-RegistryDword -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced" -Name "Hidden" -Value 1
-Set-RegistryDword -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced" -Name "ShowSuperHidden" -Value 1
+Set-RegistryDword -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced" -Name "Hidden" -Value 0
+Set-RegistryDword -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced" -Name "ShowSuperHidden" -Value 0
 Set-RegistryDword -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced" -Name "HideFileExt" -Value 0
 Set-RegistryDword -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings" -Name "TaskbarEndTask" -Value 1
 
