@@ -1,4 +1,4 @@
-Invoke-RestMethod -Uri "https://raw.githubusercontent.com/DeltaLaboratory/modules/utils.ps1" | Invoke-Expression
+Invoke-RestMethod -Uri "https://raw.githubusercontent.com/DeltaLaboratory/windows-setup/refs/heads/main/modules/utils.ps1" | Invoke-Expression
 
 I "Installing Scoop..."
 Invoke-Expression "& {$(Invoke-RestMethod https://get.scoop.sh)} -RunAsAdmin"
