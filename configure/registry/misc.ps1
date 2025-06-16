@@ -1,10 +1,16 @@
-I "Setting Registry: Xbox Related Config..."
+$progressIdMisc = 5
+$miscTotalSteps = 3
+$miscCurrentStep = 0
+
+$miscCurrentStep++; $statusMessage = "Setting Registry: Xbox Related Config..."; Write-Progress -Activity "Miscellaneous Registry Configuration" -Status $statusMessage -PercentComplete (($miscCurrentStep / $miscTotalSteps) * 100) -Id $progressIdMisc
+I $statusMessage
 Set-RegistryDword -Path "HKLM:\SYSTEM\CurrentControlSet\Services\XboxGipSvc" -Name "Start" -Value 4
 Set-RegistryDword -Path "HKLM:\SYSTEM\CurrentControlSet\Services\XblAuthManager" -Name "Start" -Value 4
 Set-RegistryDword -Path "HKLM:\SYSTEM\CurrentControlSet\Services\XblGameSave" -Name "Start" -Value 4
-Set-RegistryDword -Path "HKLM:\SYSTEM\CurrentControlSet\Services\XboxNetApiSvc" -Name "Start" -Value 4
+Set-RegistryDword -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\XboxNetApiSvc" -Name "Start" -Value 4
 
-I "Setting Registry: Annoying Things..."
+$miscCurrentStep++; $statusMessage = "Setting Registry: Annoying Things..."; Write-Progress -Activity "Miscellaneous Registry Configuration" -Status $statusMessage -PercentComplete (($miscCurrentStep / $miscTotalSteps) * 100) -Id $progressIdMisc
+I $statusMessage
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\PowerShellCore\ModuleLogging" -Name "EnableModuleLogging" -Value 1
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\PowerShellCore\ModuleLogging" -Name "UseWindowsPowerShellPolicySetting" -Value 1
 Set-RegistryString -Path "HKCU:\Software\Policies\Microsoft\PowerShellCore\ModuleLogging\ModuleNames" -Name "*" -Value "*"
@@ -57,5 +63,8 @@ Set-RegistryDword -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\CDP" -N
 Set-RegistryDword -Path "HKCU:\Software\Microsoft\TabletTip\1.7" -Name "EnableAutocorrection" -Value 0
 Set-RegistryDword -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\AutoplayHandlers" -Name "DisableAutoplay" -Value 0
 
-I "Setting Registry: PowerShell Transcript Output Directory..."
-Set-RegistryString -Path "HKCU:\Software\Policies\Microsoft\Windows\PowerShell\Transcription" -Name "OutputDirectory" -Value "C:\Users\$env:USERNAME\Documents\PowerShell\Transcripts"
+$miscCurrentStep++; $statusMessage = "Setting Registry: PowerShell Transcript Output Directory..."; Write-Progress -Activity "Miscellaneous Registry Configuration" -Status $statusMessage -PercentComplete (($miscCurrentStep / $miscTotalSteps) * 100) -Id $progressIdMisc
+I $statusMessage
+Set-RegistryString -Path "HKCU:\\Software\\Policies\\Microsoft\\Windows\\PowerShell\\Transcription" -Name "OutputDirectory" -Value "C:\\Users\\$env:USERNAME\\Documents\\PowerShell\\Transcripts"
+
+Write-Progress -Activity "Miscellaneous Registry Configuration" -Completed -Id $progressIdMisc

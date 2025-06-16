@@ -1,9 +1,17 @@
+$progressIdPowershell = 7
+$psTotalSteps = 1 # Only one main operation: setting up the profile
+$psCurrentStep = 0
+
+$psCurrentStep++; $statusMessage = "Setting up Powershell 7 Profile..."; Write-Progress -Activity "PowerShell Profile Configuration" -Status $statusMessage -PercentComplete (($psCurrentStep / $psTotalSteps) * 100) -Id $progressIdPowershell
 I "Setting up Powershell 7..."
 I "Setting up Powershell 7 Profile..."
-New-Item -Path $env:USERPROFILE\Documents\PowerShell -ItemType Directory -Force
-New-Item -Path $env:USERPROFILE\Documents\PowerShell\Transcripts -ItemType Directory -Force # For Transcripts
-New-Item -Path $env:USERPROFILE\Documents\PowerShell\Microsoft.PowerShell_profile.ps1 -ItemType File -Force
-Write-Output @"
+
+try {
+    New-Item -Path $env:USERPROFILE\Documents\PowerShell -ItemType Directory -Force -ErrorAction Stop | Out-Null
+    New-Item -Path $env:USERPROFILE\Documents\PowerShell\Transcripts -ItemType Directory -Force -ErrorAction Stop | Out-Null # For Transcripts
+    New-Item -Path $env:USERPROFILE\Documents\PowerShell\Microsoft.PowerShell_profile.ps1 -ItemType File -Force -ErrorAction Stop | Out-Null
+
+    Write-Output @"
 # PowerShell 7 Path Ingnore Fix
 `$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
@@ -66,5 +74,12 @@ function prompt {
     return "`$('>' * (`$nestedPromptLevel + 1)) "
     #endregion
 }
-"@ | Out-File -FilePath $env:USERPROFILE\Documents\PowerShell\Microsoft.PowerShell_profile.ps1 -Encoding utf8
-I "Setting up Powershell 7 Profile Completed Successfully!"
+"@ | Out-File -FilePath $env:USERPROFILE\Documents\PowerShell\Microsoft.PowerShell_profile.ps1 -Encoding utf8 -ErrorAction Stop
+    I "Setting up Powershell 7 Profile Completed Successfully!"
+} catch {
+    E "Error setting up Powershell 7 profile: $($_.Exception.Message)"
+    Write-Progress -Activity "PowerShell Profile Configuration" -Status "Error setting up profile" -Completed -Id $progressIdPowershell # Mark as completed to remove
+    # Optionally, exit the script or take other error handling actions
+    throw $_ # Re-throw the exception to be caught by main.ps1
+}
+Write-Progress -Activity "PowerShell Profile Configuration" -Completed -Id $progressIdPowershell

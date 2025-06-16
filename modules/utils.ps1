@@ -14,6 +14,14 @@ function D {
     Write-Host $Output -ForegroundColor DarkGray
 }
 
+function E {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$Output
+    )
+    Write-Host $Output -ForegroundColor Red
+}
+
 function Set-RegistryValue {
     param(
         [string]$Path,
@@ -55,7 +63,8 @@ function Set-RegistryValue {
         $changeRecord | ConvertTo-Json | Add-Content $recordPath
     }
     catch {
-        Write-Error "Failed to set registry value: $($Path)\$($Name). Error: $($_.Exception.Message)"
+        E "Failed to set registry value: $($Path)\$($Name). Error: $($_.Exception.Message)"
+        throw "Failed to set registry value: $($Path)\$($Name). Error: $($_.Exception.Message)"
     }
 }
 
@@ -76,3 +85,13 @@ function Set-RegistryString {
     )
     Set-RegistryValue -Path $Path -Name $Name -Value $Value -Type String
 }
+
+$Host.UI.RawUI.BackgroundColor = 'Black'
+$Host.UI.RawUI.ForegroundColor = 'White'
+$Host.UI.RawUI.ErrorForegroundColor = 'Red'
+$Host.UI.RawUI.WarningForegroundColor = 'Yellow'
+$Host.UI.RawUI.DebugForegroundColor = 'Gray'
+$Host.UI.RawUI.VerboseForegroundColor = 'Gray'
+$Host.UI.RawUI.ProgressForegroundColor = 'Yellow'
+$Host.UI.RawUI.ProgressBackgroundColor = 'DarkGray'
+Clear-Host

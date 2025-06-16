@@ -1,4 +1,9 @@
-I "Setting Registry: BitLocker Config..."
+$progressIdHardening = 4
+$hardeningTotalSteps = 2
+$hardeningCurrentStep = 0
+
+$hardeningCurrentStep++; $statusMessage = "Setting Registry: BitLocker Config..."; Write-Progress -Activity "Hardening Registry Configuration" -Status $statusMessage -PercentComplete (($hardeningCurrentStep / $hardeningTotalSteps) * 100) -Id $progressIdHardening
+I $statusMessage
 Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\FVE" -Name "EncryptionMethodWithXtsOs" -Value 6
 Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\FVE" -Name "DisableExternalDMAUnderLock" -Value 1
 Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\FVE" -Name "OSAllowSecureBootForIntegrity" -Value 1
@@ -12,7 +17,8 @@ Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\FVE" -Name "UseEnhanc
 Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\FVE" -Name "OSHardwareEncryption" -Value 0
 Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\FVE" -Name "MinimumPIN" -Value 8
 
-I "Setting Registry: Exploit Prevention Config..."
+$hardeningCurrentStep++; $statusMessage = "Setting Registry: Exploit Prevention Config..."; Write-Progress -Activity "Hardening Registry Configuration" -Status $statusMessage -PercentComplete (($hardeningCurrentStep / $hardeningTotalSteps) * 100) -Id $progressIdHardening
+I $statusMessage
 Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "DisableAntiSpyware" -Value 0
 Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "PUAProtection" -Value 1
 Set-RegistryString -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Exclusions" -Name "Exclusions_Extensions" -Value ""
@@ -55,3 +61,5 @@ Set-RegistryString -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Pol
 Set-RegistryDword -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Windows Defender Exploit Guard\Network Protection" -Name "EnableNetworkProtection" -Value 1
 Set-RegistryDword -Path "HKLM:\SOFTWARE\Policies\Microsoft\AppHVSI" -Name "AllowAppHVSI_ProviderSet" -Value 3
 Set-RegistryDword -Path "HKLM:\SOFTWARE\Policies\Microsoft\AppHVSI" -Name "AuditApplicationGuard" -Value 1
+
+Write-Progress -Activity "Hardening Registry Configuration" -Completed -Id $progressIdHardening
