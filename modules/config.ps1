@@ -56,5 +56,4 @@ function Invoke-RemoteScript {
     }
 }
 
-# Export functions for use in other scripts
-Export-ModuleMember -Function Get-ProgressId, Invoke-RemoteScript -Variable PROGRESS_IDS, REPO_BASE_URL, UTILS_URL, REGISTRY_SYSTEM_URL, REGISTRY_HARDENING_URL, REGISTRY_BROWSER_URL, REGISTRY_MISC_URL, SETTINGS_GENERAL_URL, SETTINGS_POWERSHELL_URL, WINGET_CONFIG_URL, SCOOP_CONFIG_URL
+# Functions and global variables are automatically available when this script is dot-sourced or executed with Invoke-Expression
