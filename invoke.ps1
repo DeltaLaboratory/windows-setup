@@ -14,6 +14,10 @@ if ([string]::IsNullOrEmpty($CacheDir)) {
     $CacheDir = Join-Path $env:TEMP "windows-setup-cache"
 }
 
+if ([string]::IsNullOrEmpty($Version)) {
+    $Version = "main"
+}
+
 # Configuration
 $REPO_BASE_URL = "https://raw.githubusercontent.com/DeltaLaboratory/windows-setup/refs/heads/$Version"
 $MAIN_SCRIPT_URL = "$REPO_BASE_URL/main.ps1"
