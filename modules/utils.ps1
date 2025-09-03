@@ -200,6 +200,79 @@ function Set-RegistryString {
     Set-RegistryValue -Path $Path -Name $Name -Value $Value -Type String -ContinueOnError:$ContinueOnError
 }
 
+# Package Installation Helper Functions
+function Test-WingetPackageInstalled {
+    param(
+        [string]$PackageId
+    )
+    try {
+        $installedPackages = winget list --id $PackageId --exact --accept-source-agreements 2>$null
+        if ($LASTEXITCODE -eq 0 -and $installedPackages -match $PackageId) {
+            return $true
+        }
+        return $false
+    } catch {
+        return $false
+    }
+}
+
+function Install-WingetPackageIfNeeded {
+    param(
+        [string]$PackageId,
+        [string]$PackageName = $PackageId
+    )
+    if (Test-WingetPackageInstalled -PackageId $PackageId) {
+        Write-StatusLine "✅" "$PackageName is already installed" "Green"
+        return $true
+    } else {
+        Write-StatusLine "📦" "Installing $PackageName..." "Cyan"
+        winget install $PackageId --accept-package-agreements --accept-source-agreements
+        if ($LASTEXITCODE -eq 0) {
+            Write-Success "$PackageName installed successfully!"
+            return $true
+        } else {
+            E "Error installing $PackageName. Exit code: $LASTEXITCODE"
+            return $false
+        }
+    }
+}
+
+function Test-ScoopPackageInstalled {
+    param(
+        [string]$PackageName
+    )
+    try {
+        $installedApps = scoop list 2>$null | Out-String
+        if ($LASTEXITCODE -eq 0 -and $installedApps -match "^\s*$PackageName\s") {
+            return $true
+        }
+        return $false
+    } catch {
+        return $false
+    }
+}
+
+function Install-ScoopPackageIfNeeded {
+    param(
+        [string]$PackageName,
+        [string]$DisplayName = $PackageName
+    )
+    if (Test-ScoopPackageInstalled -PackageName $PackageName) {
+        Write-StatusLine "✅" "$DisplayName is already installed" "Green"
+        return $true
+    } else {
+        Write-StatusLine "📦" "Installing $DisplayName..." "Cyan"
+        scoop install $PackageName
+        if ($LASTEXITCODE -eq 0) {
+            Write-Success "$DisplayName installed successfully!"
+            return $true
+        } else {
+            E "Error installing $DisplayName. Exit code: $LASTEXITCODE"
+            return $false
+        }
+    }
+}
+
 # Set console colors for better TUI experience
 $Host.UI.RawUI.BackgroundColor = 'Black'
 $Host.UI.RawUI.ForegroundColor = 'White'

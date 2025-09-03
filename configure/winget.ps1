@@ -65,63 +65,45 @@ if ($LASTEXITCODE -ne 0) {
 Write-SectionHeader "APPLICATION INSTALLATIONS" "📱"
 
 $wingetCurrentStep++; $statusMessage = "Installing Bandizip via Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($wingetCurrentStep / $wingetTotalSteps) * 100))) -Id $progressIdWinget
-Write-StatusLine "🗜️" "Installing Bandizip archive manager..." "Cyan"
-winget install Bandisoft.Bandizip --accept-package-agreements --accept-source-agreements
-if ($LASTEXITCODE -ne 0) {
-    E "Error installing Bandizip. Exit code: $LASTEXITCODE"
-    throw "Bandizip installation failed. Exit code: $LASTEXITCODE"
-} else {
-    Write-Success "Bandizip installed successfully!"
+Write-StatusLine "🗜️" "Checking/Installing Bandizip archive manager..." "Cyan"
+if (-not (Install-WingetPackageIfNeeded -PackageId "Bandisoft.Bandizip" -PackageName "Bandizip")) {
+    E "Error installing Bandizip"
+    throw "Bandizip installation failed"
 }
 
 $wingetCurrentStep++; $statusMessage = "Installing Bandiview via Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($wingetCurrentStep / $wingetTotalSteps) * 100))) -Id $progressIdWinget
-Write-StatusLine "🖼️" "Installing Bandiview image viewer..." "Cyan"
-winget install Bandisoft.Bandiview --accept-package-agreements --accept-source-agreements
-if ($LASTEXITCODE -ne 0) {
-    E "Error installing Bandiview. Exit code: $LASTEXITCODE"
-    throw "Bandiview installation failed. Exit code: $LASTEXITCODE"
-} else {
-    Write-Success "Bandiview installed successfully!"
+Write-StatusLine "🖼️" "Checking/Installing Bandiview image viewer..." "Cyan"
+if (-not (Install-WingetPackageIfNeeded -PackageId "Bandisoft.Bandiview" -PackageName "Bandiview")) {
+    E "Error installing Bandiview"
+    throw "Bandiview installation failed"
 }
 
 $wingetCurrentStep++; $statusMessage = "Installing JetBrains Toolbox via Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($wingetCurrentStep / $wingetTotalSteps) * 100))) -Id $progressIdWinget
-Write-StatusLine "🧰" "Installing JetBrains Toolbox..." "Cyan"
-winget install JetBrains.Toolbox --accept-package-agreements --accept-source-agreements
-if ($LASTEXITCODE -ne 0) {
-    E "Error installing JetBrains Toolbox. Exit code: $LASTEXITCODE"
-    throw "JetBrains Toolbox installation failed. Exit code: $LASTEXITCODE"
-} else {
-    Write-Success "JetBrains Toolbox installed successfully!"
+Write-StatusLine "🧰" "Checking/Installing JetBrains Toolbox..." "Cyan"
+if (-not (Install-WingetPackageIfNeeded -PackageId "JetBrains.Toolbox" -PackageName "JetBrains Toolbox")) {
+    E "Error installing JetBrains Toolbox"
+    throw "JetBrains Toolbox installation failed"
 }
 
 $wingetCurrentStep++; $statusMessage = "Installing Powershell 7 via Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($wingetCurrentStep / $wingetTotalSteps) * 100))) -Id $progressIdWinget
-Write-StatusLine "⚡" "Installing PowerShell 7..." "Cyan"
-winget install Microsoft.PowerShell --accept-package-agreements --accept-source-agreements
-if ($LASTEXITCODE -ne 0) {
-    E "Error installing PowerShell 7. Exit code: $LASTEXITCODE"
-    throw "PowerShell 7 installation failed. Exit code: $LASTEXITCODE"
-} else {
-    Write-Success "PowerShell 7 installed successfully!"
+Write-StatusLine "⚡" "Checking/Installing PowerShell 7..." "Cyan"
+if (-not (Install-WingetPackageIfNeeded -PackageId "Microsoft.PowerShell" -PackageName "PowerShell 7")) {
+    E "Error installing PowerShell 7"
+    throw "PowerShell 7 installation failed"
 }
 
 $wingetCurrentStep++; $statusMessage = "Installing Snipping Tool via Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($wingetCurrentStep / $wingetTotalSteps) * 100))) -Id $progressIdWinget
-Write-StatusLine "✂️" "Installing Snipping Tool..." "Cyan"
-winget install 9MZ95KL8MR0L --accept-package-agreements --accept-source-agreements
-if ($LASTEXITCODE -ne 0) {
-    E "Error installing Snipping Tool. Exit code: $LASTEXITCODE"
-    throw "Snipping Tool installation failed. Exit code: $LASTEXITCODE"
-} else {
-    Write-Success "Snipping Tool installed successfully!"
+Write-StatusLine "✂️" "Checking/Installing Snipping Tool..." "Cyan"
+if (-not (Install-WingetPackageIfNeeded -PackageId "9MZ95KL8MR0L" -PackageName "Snipping Tool")) {
+    E "Error installing Snipping Tool"
+    throw "Snipping Tool installation failed"
 }
 
 $wingetCurrentStep++; $statusMessage = "Installing PowerToys via Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($wingetCurrentStep / $wingetTotalSteps) * 100))) -Id $progressIdWinget
-Write-StatusLine "🔧" "Installing Microsoft PowerToys..." "Cyan"
-winget install Microsoft.Powertoys --accept-package-agreements --accept-source-agreements
-if ($LASTEXITCODE -ne 0) {
-    E "Error installing PowerToys. Exit code: $LASTEXITCODE"
-    throw "PowerToys installation failed. Exit code: $LASTEXITCODE"
-} else {
-    Write-Success "PowerToys installed successfully!"
+Write-StatusLine "🔧" "Checking/Installing Microsoft PowerToys..." "Cyan"
+if (-not (Install-WingetPackageIfNeeded -PackageId "Microsoft.Powertoys" -PackageName "PowerToys")) {
+    E "Error installing PowerToys"
+    throw "PowerToys installation failed"
 }
 
 Write-StatusLine "🎉" "Winget configuration completed successfully!" "Green"

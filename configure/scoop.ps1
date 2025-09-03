@@ -12,13 +12,19 @@ Write-Host ""
 
 $scoopCurrentStep++; $statusMessage = "Installing Scoop, Updating, and Configuring SQLite..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
 Write-SectionHeader "SCOOP INSTALLATION & SETUP" "🔧"
-Write-StatusLine "📦" "Installing Scoop package manager..." "Cyan"
-Invoke-Expression "& {$(Invoke-RestMethod https://get.scoop.sh)} -RunAsAdmin"
-if ($LASTEXITCODE -ne 0) {
-    E "Error installing Scoop. Exit code: $LASTEXITCODE"
-    throw "Scoop installation failed. Exit code: $LASTEXITCODE"
+
+# Check if Scoop is already installed
+if (Get-Command scoop -ErrorAction SilentlyContinue) {
+    Write-StatusLine "✅" "Scoop is already installed" "Green"
 } else {
-    Write-Success "Scoop installed successfully!"
+    Write-StatusLine "📦" "Installing Scoop package manager..." "Cyan"
+    Invoke-Expression "& {$(Invoke-RestMethod https://get.scoop.sh)} -RunAsAdmin"
+    if ($LASTEXITCODE -ne 0) {
+        E "Error installing Scoop. Exit code: $LASTEXITCODE"
+        throw "Scoop installation failed. Exit code: $LASTEXITCODE"
+    } else {
+        Write-Success "Scoop installed successfully!"
+    }
 }
 
 Write-StatusLine "🔄" "Updating Scoop..." "Cyan"
@@ -41,22 +47,16 @@ if ($LASTEXITCODE -ne 0) {
 
 $scoopCurrentStep++; $statusMessage = "Installing Git & Git-LFS via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
 Write-SectionHeader "VERSION CONTROL TOOLS" "🌿"
-Write-StatusLine "📚" "Installing Git version control system..." "Cyan"
-scoop install git
-if ($LASTEXITCODE -ne 0) {
-    E "Error installing Git. Exit code: $LASTEXITCODE"
-    throw "Git installation via Scoop failed. Exit code: $LASTEXITCODE"
-} else {
-    Write-Success "Git installed successfully!"
+Write-StatusLine "📚" "Checking/Installing Git version control system..." "Cyan"
+if (-not (Install-ScoopPackageIfNeeded -PackageName "git" -DisplayName "Git")) {
+    E "Error installing Git"
+    throw "Git installation via Scoop failed"
 }
 
-Write-StatusLine "📁" "Installing Git-LFS for large file support..." "Cyan"
-scoop install git-lfs
-if ($LASTEXITCODE -ne 0) {
-    E "Error installing Git-LFS. Exit code: $LASTEXITCODE"
-    throw "Git-LFS installation via Scoop failed. Exit code: $LASTEXITCODE"
-} else {
-    Write-Success "Git-LFS installed successfully!"
+Write-StatusLine "📁" "Checking/Installing Git-LFS for large file support..." "Cyan"
+if (-not (Install-ScoopPackageIfNeeded -PackageName "git-lfs" -DisplayName "Git-LFS")) {
+    E "Error installing Git-LFS"
+    throw "Git-LFS installation via Scoop failed"
 }
 
 Write-StatusLine "⚙️" "Configuring Git settings..." "Cyan"
@@ -83,63 +83,64 @@ Write-Success "Git configuration completed!"
 
 $scoopCurrentStep++; $statusMessage = "Setting up Scoop Buckets (Extras, Nerd-Fonts)..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
 Write-SectionHeader "SCOOP BUCKETS SETUP" "📦"
-Write-StatusLine "🎯" "Adding extras bucket for additional applications..." "Cyan"
-scoop bucket add extras
-if ($LASTEXITCODE -ne 0) {
-    E "Error setting up Scoop Extras Bucket. Exit code: $LASTEXITCODE"
-    throw "Scoop Extras Bucket setup failed. Exit code: $LASTEXITCODE"
+
+# Check if extras bucket is already added
+$extrasBucketExists = scoop bucket list | Select-String -Pattern "extras" -Quiet
+if ($extrasBucketExists) {
+    Write-StatusLine "✅" "Extras bucket is already added" "Green"
 } else {
-    Write-Success "Scoop extras bucket added!"
+    Write-StatusLine "🎯" "Adding extras bucket for additional applications..." "Cyan"
+    scoop bucket add extras
+    if ($LASTEXITCODE -ne 0) {
+        E "Error setting up Scoop Extras Bucket. Exit code: $LASTEXITCODE"
+        throw "Scoop Extras Bucket setup failed. Exit code: $LASTEXITCODE"
+    } else {
+        Write-Success "Scoop extras bucket added!"
+    }
 }
 
-Write-StatusLine "🔤" "Adding nerd-fonts bucket for developer fonts..." "Cyan"
-scoop bucket add nerd-fonts
-if ($LASTEXITCODE -ne 0) {
-    E "Error setting up Scoop Nerd Font Bucket. Exit code: $LASTEXITCODE"
-    throw "Scoop Nerd Font Bucket setup failed. Exit code: $LASTEXITCODE"
+# Check if nerd-fonts bucket is already added
+$nerdFontsBucketExists = scoop bucket list | Select-String -Pattern "nerd-fonts" -Quiet
+if ($nerdFontsBucketExists) {
+    Write-StatusLine "✅" "Nerd-fonts bucket is already added" "Green"
 } else {
-    Write-Success "Scoop nerd-fonts bucket added!"
+    Write-StatusLine "🔤" "Adding nerd-fonts bucket for developer fonts..." "Cyan"
+    scoop bucket add nerd-fonts
+    if ($LASTEXITCODE -ne 0) {
+        E "Error setting up Scoop Nerd Font Bucket. Exit code: $LASTEXITCODE"
+        throw "Scoop Nerd Font Bucket setup failed. Exit code: $LASTEXITCODE"
+    } else {
+        Write-Success "Scoop nerd-fonts bucket added!"
+    }
 }
 
 $scoopCurrentStep++; $statusMessage = "Installing Fonts (IBM Plex) via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
 Write-SectionHeader "DEVELOPER FONTS" "🔤"
-Write-StatusLine "📝" "Installing IBM Plex Mono font..." "Cyan"
-scoop install IBMPlexMono
-if ($LASTEXITCODE -ne 0) {
-    E "Error installing IBMPlexMono. Exit code: $LASTEXITCODE"
-    throw "IBMPlexMono installation via Scoop failed. Exit code: $LASTEXITCODE"
-} else {
-    Write-Success "IBM Plex Mono installed!"
+Write-StatusLine "📝" "Checking/Installing IBM Plex Mono font..." "Cyan"
+if (-not (Install-ScoopPackageIfNeeded -PackageName "IBMPlexMono" -DisplayName "IBM Plex Mono")) {
+    E "Error installing IBMPlexMono"
+    throw "IBMPlexMono installation via Scoop failed"
 }
 
-Write-StatusLine "🇰🇷" "Installing IBM Plex Sans Korean font..." "Cyan"
-scoop install IBMPlexSans-KR
-if ($LASTEXITCODE -ne 0) {
-    E "Error installing IBMPlexSans-KR. Exit code: $LASTEXITCODE"
-    throw "IBMPlexSans-KR installation via Scoop failed. Exit code: $LASTEXITCODE"
-} else {
-    Write-Success "IBM Plex Sans KR installed!"
+Write-StatusLine "🇰🇷" "Checking/Installing IBM Plex Sans Korean font..." "Cyan"
+if (-not (Install-ScoopPackageIfNeeded -PackageName "IBMPlexSans-KR" -DisplayName "IBM Plex Sans KR")) {
+    E "Error installing IBMPlexSans-KR"
+    throw "IBMPlexSans-KR installation via Scoop failed"
 }
 
 $scoopCurrentStep++; $statusMessage = "Installing Go via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
 Write-SectionHeader "PROGRAMMING LANGUAGES" "👨‍💻"
-Write-StatusLine "🐹" "Installing Go programming language..." "Cyan"
-scoop install go
-if ($LASTEXITCODE -ne 0) {
-    E "Error installing Go. Exit code: $LASTEXITCODE"
-    throw "Go installation via Scoop failed. Exit code: $LASTEXITCODE"
-} else {
-    Write-Success "Go programming language installed!"
+Write-StatusLine "🐹" "Checking/Installing Go programming language..." "Cyan"
+if (-not (Install-ScoopPackageIfNeeded -PackageName "go" -DisplayName "Go programming language")) {
+    E "Error installing Go"
+    throw "Go installation via Scoop failed"
 }
 
 $scoopCurrentStep++; $statusMessage = "Installing Node.js & Setting up Corepack/pnpm via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
-Write-StatusLine "🟢" "Installing Node.js runtime..." "Cyan"
-scoop install nodejs
-if ($LASTEXITCODE -ne 0) {
-    E "Error installing Node.js. Exit code: $LASTEXITCODE"
-    throw "Node.js installation via Scoop failed. Exit code: $LASTEXITCODE"
-} else {
-    Write-Success "Node.js installed!"
+Write-StatusLine "🟢" "Checking/Installing Node.js runtime..." "Cyan"
+if (-not (Install-ScoopPackageIfNeeded -PackageName "nodejs" -DisplayName "Node.js")) {
+    E "Error installing Node.js"
+    throw "Node.js installation via Scoop failed"
 }
 
 Write-StatusLine "📦" "Configuring Node.js package managers..." "Cyan"
@@ -162,54 +163,39 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 $scoopCurrentStep++; $statusMessage = "Installing Python & Setting up Poetry via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
-Write-StatusLine "🐍" "Installing Python programming language..." "Cyan"
-scoop install python
-if ($LASTEXITCODE -ne 0) {
-    E "Error installing Python. Exit code: $LASTEXITCODE"
-    throw "Python installation via Scoop failed. Exit code: $LASTEXITCODE"
-} else {
-    Write-Success "Python installed!"
+Write-StatusLine "🐍" "Checking/Installing Python programming language..." "Cyan"
+if (-not (Install-ScoopPackageIfNeeded -PackageName "python" -DisplayName "Python")) {
+    E "Error installing Python"
+    throw "Python installation via Scoop failed"
 }
 
-Write-StatusLine "📝" "Installing Poetry dependency manager..." "Cyan"
-scoop install poetry
-if ($LASTEXITCODE -ne 0) {
-    E "Error installing Poetry. Exit code: $LASTEXITCODE"
-    throw "Poetry installation via Scoop failed. Exit code: $LASTEXITCODE"
-} else {
-    Write-Success "Poetry installed!"
+Write-StatusLine "📝" "Checking/Installing Poetry dependency manager..." "Cyan"
+if (-not (Install-ScoopPackageIfNeeded -PackageName "poetry" -DisplayName "Poetry")) {
+    E "Error installing Poetry"
+    throw "Poetry installation via Scoop failed"
 }
 
 $scoopCurrentStep++; $statusMessage = "Installing GPG via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
 Write-SectionHeader "SECURITY TOOLS" "🔐"
-Write-StatusLine "🔒" "Installing GPG for cryptographic operations..." "Cyan"
-scoop install gpg
-if ($LASTEXITCODE -ne 0) {
-    E "Error installing gpg. Exit code: $LASTEXITCODE"
-    throw "gpg installation via Scoop failed. Exit code: $LASTEXITCODE"
-} else {
-    Write-Success "GPG installed!"
+Write-StatusLine "🔒" "Checking/Installing GPG for cryptographic operations..." "Cyan"
+if (-not (Install-ScoopPackageIfNeeded -PackageName "gpg" -DisplayName "GPG")) {
+    E "Error installing GPG"
+    throw "GPG installation via Scoop failed"
 }
 
 $scoopCurrentStep++; $statusMessage = "Installing Github CLI via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
-Write-StatusLine "🐙" "Installing GitHub CLI..." "Cyan"
-scoop install gh
-if ($LASTEXITCODE -ne 0) {
-    E "Error installing Github CLI. Exit code: $LASTEXITCODE"
-    throw "Github CLI installation via Scoop failed. Exit code: $LASTEXITCODE"
-} else {
-    Write-Success "GitHub CLI installed!"
+Write-StatusLine "🐙" "Checking/Installing GitHub CLI..." "Cyan"
+if (-not (Install-ScoopPackageIfNeeded -PackageName "gh" -DisplayName "GitHub CLI")) {
+    E "Error installing GitHub CLI"
+    throw "GitHub CLI installation via Scoop failed"
 }
 
 $scoopCurrentStep++; $statusMessage = "Installing MSYS2 & Setting up via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
 Write-SectionHeader "DEVELOPMENT ENVIRONMENT" "🔨"
-Write-StatusLine "🛠️" "Installing MSYS2 Unix-like environment..." "Cyan"
-scoop install msys2
-if ($LASTEXITCODE -ne 0) {
-    E "Error installing MSYS2. Exit code: $LASTEXITCODE"
-    throw "MSYS2 installation via Scoop failed. Exit code: $LASTEXITCODE"
-} else {
-    Write-Success "MSYS2 installed!"
+Write-StatusLine "🛠️" "Checking/Installing MSYS2 Unix-like environment..." "Cyan"
+if (-not (Install-ScoopPackageIfNeeded -PackageName "msys2" -DisplayName "MSYS2")) {
+    E "Error installing MSYS2"
+    throw "MSYS2 installation via Scoop failed"
 }
 
 Write-StatusLine "⚙️" "Configuring MSYS2 environment..." "Cyan"
@@ -246,23 +232,17 @@ Write-Success "MSYS2 setup completed!"
 
 $scoopCurrentStep++; $statusMessage = "Installing Notepad++ via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
 Write-SectionHeader "PRODUCTIVITY APPLICATIONS" "📝"
-Write-StatusLine "📄" "Installing Notepad++ text editor..." "Cyan"
-scoop install notepadplusplus
-if ($LASTEXITCODE -ne 0) {
-    E "Error installing Notepad++. Exit code: $LASTEXITCODE"
-    throw "Notepad++ installation via Scoop failed. Exit code: $LASTEXITCODE"
-} else {
-    Write-Success "Notepad++ installed!"
+Write-StatusLine "📄" "Checking/Installing Notepad++ text editor..." "Cyan"
+if (-not (Install-ScoopPackageIfNeeded -PackageName "notepadplusplus" -DisplayName "Notepad++")) {
+    E "Error installing Notepad++"
+    throw "Notepad++ installation via Scoop failed"
 }
 
 $scoopCurrentStep++; $statusMessage = "Installing SMPlayer via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
-Write-StatusLine "🎬" "Installing SMPlayer media player..." "Cyan"
-scoop install extras/smplayer
-if ($LASTEXITCODE -ne 0) {
-    E "Error installing SMPlayer. Exit code: $LASTEXITCODE"
-    throw "SMPlayer installation via Scoop failed. Exit code: $LASTEXITCODE"
-} else {
-    Write-Success "SMPlayer installed!"
+Write-StatusLine "🎬" "Checking/Installing SMPlayer media player..." "Cyan"
+if (-not (Install-ScoopPackageIfNeeded -PackageName "extras/smplayer" -DisplayName "SMPlayer")) {
+    E "Error installing SMPlayer"
+    throw "SMPlayer installation via Scoop failed"
 }
 
 Write-Progress -Activity "Scoop Package Management" -Completed -Id $progressIdScoop
