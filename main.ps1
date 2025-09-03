@@ -96,10 +96,36 @@ Write-SectionHeader "SCOOP PACKAGES" "🪣"
 
 $mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Configuring Scoop Packages..." -PercentComplete ([Math]::Min(100, (($mainCurrentStep / $mainTotalSteps) * 100))) -Id $progressIdMain
 $scoopSuccess = Invoke-SafeStep -StepName "Scoop Package Configuration" -Description "Scoop Package Configuration" -Action {
-    $STUB = "iex (iwr '$Global:SCOOP_CONFIG_URL' -UseBasicParsing).Content"
-    Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -Command `$STUB" -Wait
-    if ($LASTEXITCODE -ne 0) {
-        throw "Error executing scoop.ps1. Exit code: $LASTEXITCODE"
+    # Detect PowerShell executable - prefer pwsh over powershell.exe
+    $powershellExe = "powershell.exe"
+    if (Get-Command "pwsh" -ErrorAction SilentlyContinue) {
+        $powershellExe = "pwsh"
+        I "Using PowerShell Core (pwsh) for scoop configuration"
+    } else {
+        I "Using Windows PowerShell (powershell.exe) for scoop configuration"
+    }
+    
+    # Download scoop script to temp file instead of passing as command parameter
+    $tempDir = [System.IO.Path]::GetTempPath()
+    $tempScriptPath = Join-Path $tempDir "scoop-config-$(Get-Random).ps1"
+    
+    try {
+        I "Downloading scoop configuration script to temporary file: $tempScriptPath"
+        $scriptContent = Invoke-RestMethod -Uri $Global:SCOOP_CONFIG_URL -UseBasicParsing
+        Set-Content -Path $tempScriptPath -Value $scriptContent -Encoding UTF8
+        
+        I "Executing scoop configuration from temporary file"
+        Start-Process $powershellExe -ArgumentList "-ExecutionPolicy Bypass -File `"$tempScriptPath`"" -Wait
+        
+        if ($LASTEXITCODE -ne 0) {
+            throw "Error executing scoop configuration script. Exit code: $LASTEXITCODE"
+        }
+    } finally {
+        # Clean up temporary file
+        if (Test-Path $tempScriptPath) {
+            Remove-Item $tempScriptPath -Force -ErrorAction SilentlyContinue
+            D "Cleaned up temporary script file: $tempScriptPath"
+        }
     }
 }
 
