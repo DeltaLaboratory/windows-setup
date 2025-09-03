@@ -97,7 +97,7 @@ Write-SectionHeader "SCOOP PACKAGES" "🪣"
 $mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Configuring Scoop Packages..." -PercentComplete ([Math]::Min(100, (($mainCurrentStep / $mainTotalSteps) * 100))) -Id $progressIdMain
 $scoopSuccess = Invoke-SafeStep -StepName "Scoop Package Configuration" -Description "Scoop Package Configuration" -Action {
     $STUB = "iex (iwr '$Global:SCOOP_CONFIG_URL' -UseBasicParsing).Content"
-    Start-Process powershell.exe -ArgumentList "-NoExit -ExecutionPolicy Bypass -Command `$STUB" -Wait
+    Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -Command `$STUB" -Wait
     if ($LASTEXITCODE -ne 0) {
         throw "Error executing scoop.ps1. Exit code: $LASTEXITCODE"
     }
