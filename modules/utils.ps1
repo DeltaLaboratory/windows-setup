@@ -242,8 +242,15 @@ function Test-ScoopPackageInstalled {
         [string]$PackageName
     )
     try {
+        # Handle bucket/package format by extracting just the package name
+        $packageOnly = if ($PackageName -match "/") {
+            $PackageName.Split("/")[-1]
+        } else {
+            $PackageName
+        }
+        
         $installedApps = scoop list 2>$null | Out-String
-        if ($LASTEXITCODE -eq 0 -and $installedApps -match "^\s*$PackageName\s") {
+        if ($LASTEXITCODE -eq 0 -and $installedApps -match [regex]::Escape($packageOnly)) {
             return $true
         }
         return $false
