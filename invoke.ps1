@@ -137,6 +137,21 @@ function Test-ScriptIntegrity {
 }
 
 # Main execution
+$script:LoaderErrors = @()
+$script:LoaderWarnings = @()
+
+function Add-LoaderError {
+    param([string]$Message)
+    $script:LoaderErrors += $Message
+    Write-StatusLine "❌" "ERROR: $Message" "Red"
+}
+
+function Add-LoaderWarning {
+    param([string]$Message)
+    $script:LoaderWarnings += $Message
+    Write-StatusLine "⚠️" "WARNING: $Message" "Yellow"
+}
+
 try {
     Clear-Host
 
@@ -158,56 +173,132 @@ try {
     Write-BoxedHeader "📋 LOADING SCRIPTS" "Green" 50
 
     # Load configuration first
+    $configSuccess = $true
     Write-ProgressStep "Loading configuration module..." "IN_PROGRESS"
-    $ConfigContent = Get-CachedScript -Url $CONFIG_SCRIPT_URL -FileName "config.ps1"
-    if (-not (Test-ScriptIntegrity $ConfigContent)) {
-        throw "Configuration script integrity check failed"
+    try {
+        $ConfigContent = Get-CachedScript -Url $CONFIG_SCRIPT_URL -FileName "config.ps1"
+        if (-not (Test-ScriptIntegrity $ConfigContent)) {
+            throw "Configuration script integrity check failed"
+        }
+        Write-ProgressStep "Configuration module validated" "SUCCESS"
+    } catch {
+        $configSuccess = $false
+        Add-LoaderError "Configuration loading failed: $($_.Exception.Message)"
+        Write-ProgressStep "Configuration module failed" "ERROR"
     }
-    Write-ProgressStep "Configuration module validated" "SUCCESS"
 
     # Load utilities
+    $utilsSuccess = $true
     Write-ProgressStep "Loading utilities module..." "IN_PROGRESS"
-    $UtilsContent = Get-CachedScript -Url $UTILS_SCRIPT_URL -FileName "utils.ps1"
-    if (-not (Test-ScriptIntegrity $UtilsContent)) {
-        throw "Utils script integrity check failed"
+    try {
+        $UtilsContent = Get-CachedScript -Url $UTILS_SCRIPT_URL -FileName "utils.ps1"
+        if (-not (Test-ScriptIntegrity $UtilsContent)) {
+            throw "Utils script integrity check failed"
+        }
+        Write-ProgressStep "Utilities module validated" "SUCCESS"
+    } catch {
+        $utilsSuccess = $false
+        Add-LoaderError "Utilities loading failed: $($_.Exception.Message)"
+        Write-ProgressStep "Utilities module failed" "ERROR"
     }
-    Write-ProgressStep "Utilities module validated" "SUCCESS"
 
     # Load main script
+    $mainSuccess = $true
     Write-ProgressStep "Loading main script..." "IN_PROGRESS"
-    $MainContent = Get-CachedScript -Url $MAIN_SCRIPT_URL -FileName "main.ps1"
-    if (-not (Test-ScriptIntegrity $MainContent)) {
-        throw "Main script integrity check failed"
+    try {
+        $MainContent = Get-CachedScript -Url $MAIN_SCRIPT_URL -FileName "main.ps1"
+        if (-not (Test-ScriptIntegrity $MainContent)) {
+            throw "Main script integrity check failed"
+        }
+        Write-ProgressStep "Main script validated" "SUCCESS"
+    } catch {
+        $mainSuccess = $false
+        Add-LoaderError "Main script loading failed: $($_.Exception.Message)"
+        Write-ProgressStep "Main script failed" "ERROR"
     }
-    Write-ProgressStep "Main script validated" "SUCCESS"
 
     Write-Host ""
-    Write-BoxedHeader "🎯 EXECUTING SETUP" "Magenta" 50
+    
+    # Check if we can proceed with execution
+    if (-not $configSuccess -or -not $utilsSuccess -or -not $mainSuccess) {
+        Write-BoxedHeader "⚠️ PARTIAL LOADING COMPLETED" "Yellow" 50
+        Write-StatusLine "🚫" "Some scripts failed to load. Setup cannot continue." "Red"
+        
+        Write-Host ""
+        Write-StatusLine "💡" "Troubleshooting Options:" "Yellow"
+        Write-StatusLine "  🔄" "Run with -ForceDownload to refresh cache" "Cyan"
+        Write-StatusLine "  📴" "Check your internet connection" "Cyan"
+        Write-StatusLine "  📁" "Verify cache directory permissions" "Cyan"
+    } else {
+        Write-BoxedHeader "🎯 EXECUTING SETUP" "Magenta" 50
 
-    # Execute the scripts in order
-    Write-ProgressStep "Executing configuration..." "IN_PROGRESS"
-    Invoke-Expression $ConfigContent
-    Write-ProgressStep "Configuration executed" "SUCCESS"
+        # Execute the scripts in order
+        try {
+            Write-ProgressStep "Executing configuration..." "IN_PROGRESS"
+            Invoke-Expression $ConfigContent
+            Write-ProgressStep "Configuration executed" "SUCCESS"
+        } catch {
+            Add-LoaderWarning "Configuration execution had issues: $($_.Exception.Message)"
+            Write-ProgressStep "Configuration had warnings" "WARNING"
+        }
 
-    Write-ProgressStep "Executing utilities..." "IN_PROGRESS"
-    Invoke-Expression $UtilsContent
-    Write-ProgressStep "Utilities executed" "SUCCESS"
+        try {
+            Write-ProgressStep "Executing utilities..." "IN_PROGRESS"
+            Invoke-Expression $UtilsContent
+            Write-ProgressStep "Utilities executed" "SUCCESS"
+        } catch {
+            Add-LoaderWarning "Utilities execution had issues: $($_.Exception.Message)"
+            Write-ProgressStep "Utilities had warnings" "WARNING"
+        }
 
-    Write-ProgressStep "Executing main setup..." "IN_PROGRESS"
-    Invoke-Expression $MainContent
+        try {
+            Write-ProgressStep "Executing main setup..." "IN_PROGRESS"
+            Invoke-Expression $MainContent
+            Write-ProgressStep "Main setup completed" "SUCCESS"
+        } catch {
+            Add-LoaderError "Main setup execution failed: $($_.Exception.Message)"
+            Write-ProgressStep "Main setup failed" "ERROR"
+        }
+    }
 
 } catch {
+    Add-LoaderError "Unexpected error in loader: $($_.Exception.Message)"
+}
+
+# Display final summary
+Write-Host ""
+if ($script:LoaderErrors.Count -eq 0 -and $script:LoaderWarnings.Count -eq 0) {
+    Write-BoxedHeader "🎉 LOADER COMPLETED SUCCESSFULLY!" "Green" 60
+} elseif ($script:LoaderErrors.Count -eq 0) {
+    Write-BoxedHeader "⚠️ LOADER COMPLETED WITH WARNINGS" "Yellow" 60
+    Write-StatusLine "⚠️" "$($script:LoaderWarnings.Count) warnings occurred during loading" "Yellow"
+} else {
+    Write-BoxedHeader "❌ LOADER COMPLETED WITH ERRORS" "Red" 60
+    Write-StatusLine "❌" "$($script:LoaderErrors.Count) errors and $($script:LoaderWarnings.Count) warnings occurred" "Red"
+}
+
+# Show errors and warnings if any
+if ($script:LoaderWarnings.Count -gt 0) {
     Write-Host ""
-    Write-BoxedHeader "❌ ERROR OCCURRED" "Red" 50
-    Write-StatusLine "💥" "ERROR: $($_.Exception.Message)" "Red"
+    Write-StatusLine "⚠️" "Warnings:" "Yellow"
+    foreach ($warning in $script:LoaderWarnings) {
+        Write-StatusLine "  ▫️" $warning "Yellow"
+    }
+}
+
+if ($script:LoaderErrors.Count -gt 0) {
+    Write-Host ""
+    Write-StatusLine "❌" "Errors:" "Red"
+    foreach ($error in $script:LoaderErrors) {
+        Write-StatusLine "  ▫️" $error "Red"
+    }
     Write-Host ""
     Write-StatusLine "💡" "Troubleshooting Options:" "Yellow"
     Write-StatusLine "  🔄" "Run with -ForceDownload to refresh cache" "Cyan"
     Write-StatusLine "  📴" "Run with -OfflineMode to use only cached files" "Cyan"
     Write-StatusLine "  🌐" "Check your internet connection" "Cyan"
     Write-StatusLine "  📁" "Verify cache directory permissions" "Cyan"
-    Write-Host ""
-
-    Read-Host "Press Enter to exit"
-    exit 1
 }
+
+Write-Host ""
+Read-Host "Press Enter to continue"

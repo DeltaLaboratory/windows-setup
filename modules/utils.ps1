@@ -109,7 +109,8 @@ function Set-RegistryValue {
         [string]$Path,
         [string]$Name,
         [object]$Value,
-        [string]$Type
+        [string]$Type,
+        [switch]$ContinueOnError
     )
     try {
         # Get original value if exists
@@ -117,36 +118,65 @@ function Set-RegistryValue {
         if (Test-Path -Path $Path) {
             try {
                 $originalValue = Get-ItemProperty -Path $Path -Name $Name -ErrorAction SilentlyContinue
-            } catch {}
+            } catch {
+                # Ignore errors when getting original value
+            }
         }
 
         # Check if the path exists, if not, create it
         if (-not (Test-Path -Path $Path)) {
-            New-Item -Path $Path -ItemType Directory -Force | Out-Null
+            try {
+                New-Item -Path $Path -ItemType Directory -Force | Out-Null
+            } catch {
+                if (-not $ContinueOnError) {
+                    throw "Failed to create registry path: $Path. Error: $($_.Exception.Message)"
+                }
+                E "Failed to create registry path: $Path. Error: $($_.Exception.Message)"
+                return $false
+            }
         }
 
         # Set the registry property
-        New-ItemProperty -Path $Path -Name $Name -Value $Value -PropertyType $Type -Force | Out-Null
-        D "Registry: $($Path)\$($Name) = $($Value) ($($Type))"
-
-        # Create change record
-        $changeRecord = @{
-            Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-            Path = $Path
-            Name = $Name
-            NewValue = $Value
-            NewType = $Type
-            OriginalValue = if ($originalValue) { $originalValue.$Name } else { $null }
-            OriginalType = if ($originalValue) { $originalValue.GetType().Name } else { $null }
+        try {
+            New-ItemProperty -Path $Path -Name $Name -Value $Value -PropertyType $Type -Force | Out-Null
+            D "Registry: $($Path)\$($Name) = $($Value) ($($Type))"
+        } catch {
+            if (-not $ContinueOnError) {
+                throw "Failed to set registry value: $($Path)\$($Name). Error: $($_.Exception.Message)"
+            }
+            E "Failed to set registry value: $($Path)\$($Name). Error: $($_.Exception.Message)"
+            return $false
         }
 
-        # Save change record to file
-        $recordPath = Join-Path $env:USERPROFILE "Documents\RegistryChanges.jsonl"
-        $changeRecord | ConvertTo-Json | Add-Content $recordPath
+        # Create change record
+        try {
+            $changeRecord = @{
+                Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+                Path = $Path
+                Name = $Name
+                NewValue = $Value
+                NewType = $Type
+                OriginalValue = if ($originalValue) { $originalValue.$Name } else { $null }
+                OriginalType = if ($originalValue) { $originalValue.GetType().Name } else { $null }
+            }
+
+            # Save change record to file
+            $recordPath = Join-Path $env:USERPROFILE "Documents\RegistryChanges.jsonl"
+            $changeRecord | ConvertTo-Json | Add-Content $recordPath -ErrorAction SilentlyContinue
+        } catch {
+            # Log the registry change error but continue - this is not critical
+            Write-Warning "Could not log registry change to file: $($_.Exception.Message)"
+        }
+        
+        return $true
     }
     catch {
+        if (-not $ContinueOnError) {
+            E "Failed to set registry value: $($Path)\$($Name). Error: $($_.Exception.Message)"
+            throw "Failed to set registry value: $($Path)\$($Name). Error: $($_.Exception.Message)"
+        }
         E "Failed to set registry value: $($Path)\$($Name). Error: $($_.Exception.Message)"
-        throw "Failed to set registry value: $($Path)\$($Name). Error: $($_.Exception.Message)"
+        return $false
     }
 }
 
@@ -154,18 +184,20 @@ function Set-RegistryDword {
     param(
         [string]$Path,
         [string]$Name,
-        [int]$Value
+        [int]$Value,
+        [switch]$ContinueOnError
     )
-    Set-RegistryValue -Path $Path -Name $Name -Value $Value -Type DWord
+    Set-RegistryValue -Path $Path -Name $Name -Value $Value -Type DWord -ContinueOnError:$ContinueOnError
 }
 
 function Set-RegistryString {
     param(
         [string]$Path,
         [string]$Name,
-        [string]$Value
+        [string]$Value,
+        [switch]$ContinueOnError
     )
-    Set-RegistryValue -Path $Path -Name $Name -Value $Value -Type String
+    Set-RegistryValue -Path $Path -Name $Name -Value $Value -Type String -ContinueOnError:$ContinueOnError
 }
 
 # Set console colors for better TUI experience

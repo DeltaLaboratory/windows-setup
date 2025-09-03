@@ -18,76 +18,133 @@ Write-Host ""
 
 $mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Starting System Registry Configuration..." -PercentComplete (($mainCurrentStep / $mainTotalSteps) * 100) -Id $progressIdMain
 
-try {
-    Write-SectionHeader "REGISTRY CONFIGURATION" "🔧"
+# Initialize error tracking
+$script:ErrorSummary = @()
+$script:SuccessfulSteps = @()
+$script:FailedSteps = @()
 
-    $mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Configuring System Registry..." -PercentComplete (($mainCurrentStep / $mainTotalSteps) * 100) -Id $progressIdMain
-    Write-ProgressStep "Executing System Registry Configuration..." "IN_PROGRESS"
+# Helper function to execute steps with error handling
+function Invoke-SafeStep {
+    param(
+        [string]$StepName,
+        [string]$Description,
+        [scriptblock]$Action
+    )
+    
+    try {
+        Write-ProgressStep "Executing $StepName..." "IN_PROGRESS"
+        & $Action
+        Write-ProgressStep "$StepName completed" "SUCCESS"
+        $script:SuccessfulSteps += $StepName
+        return $true
+    } catch {
+        Write-ProgressStep "$StepName failed" "ERROR"
+        E "Error in ${StepName}: $($_.Exception.Message)"
+        $script:ErrorSummary += @{
+            Step = $StepName
+            Description = $Description
+            Error = $_.Exception.Message
+            Timestamp = Get-Date
+        }
+        $script:FailedSteps += $StepName
+        return $false
+    }
+}
+
+Write-SectionHeader "REGISTRY CONFIGURATION" "🔧"
+
+$mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Configuring System Registry..." -PercentComplete (($mainCurrentStep / $mainTotalSteps) * 100) -Id $progressIdMain
+Invoke-SafeStep -StepName "System Registry Configuration" -Description "System Registry Configuration" -Action {
     Invoke-RemoteScript -Url $Global:REGISTRY_SYSTEM_URL -Description "System Registry Configuration"
-    Write-ProgressStep "System Registry Configuration completed" "SUCCESS"
+}
 
-    $mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Configuring Hardening Registry Settings..." -PercentComplete (($mainCurrentStep / $mainTotalSteps) * 100) -Id $progressIdMain
-    Write-ProgressStep "Executing Security Hardening Configuration..." "IN_PROGRESS"
+$mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Configuring Hardening Registry Settings..." -PercentComplete (($mainCurrentStep / $mainTotalSteps) * 100) -Id $progressIdMain
+Invoke-SafeStep -StepName "Security Hardening Configuration" -Description "Hardening Registry Configuration" -Action {
     Invoke-RemoteScript -Url $Global:REGISTRY_HARDENING_URL -Description "Hardening Registry Configuration"
-    Write-ProgressStep "Security Hardening Configuration completed" "SUCCESS"
+}
 
-    $mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Configuring Browser Registry Settings..." -PercentComplete (($mainCurrentStep / $mainTotalSteps) * 100) -Id $progressIdMain
-    Write-ProgressStep "Executing Browser Configuration..." "IN_PROGRESS"
+$mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Configuring Browser Registry Settings..." -PercentComplete (($mainCurrentStep / $mainTotalSteps) * 100) -Id $progressIdMain
+Invoke-SafeStep -StepName "Browser Configuration" -Description "Browser Registry Configuration" -Action {
     Invoke-RemoteScript -Url $Global:REGISTRY_BROWSER_URL -Description "Browser Registry Configuration"
-    Write-ProgressStep "Browser Configuration completed" "SUCCESS"
+}
 
-    $mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Configuring Miscellaneous Registry Settings..." -PercentComplete (($mainCurrentStep / $mainTotalSteps) * 100) -Id $progressIdMain
-    Write-ProgressStep "Executing Miscellaneous Registry Configuration..." "IN_PROGRESS"
+$mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Configuring Miscellaneous Registry Settings..." -PercentComplete (($mainCurrentStep / $mainTotalSteps) * 100) -Id $progressIdMain
+Invoke-SafeStep -StepName "Miscellaneous Registry Configuration" -Description "Miscellaneous Registry Configuration" -Action {
     Invoke-RemoteScript -Url $Global:REGISTRY_MISC_URL -Description "Miscellaneous Registry Configuration"
-    Write-ProgressStep "Miscellaneous Registry Configuration completed" "SUCCESS"
+}
 
-    Write-SectionHeader "SYSTEM SETTINGS" "⚙️"
+Write-SectionHeader "SYSTEM SETTINGS" "⚙️"
 
-    $mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Configuring System Settings..." -PercentComplete (($mainCurrentStep / $mainTotalSteps) * 100) -Id $progressIdMain
-    Write-ProgressStep "Executing System Settings Configuration..." "IN_PROGRESS"
+$mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Configuring System Settings..." -PercentComplete (($mainCurrentStep / $mainTotalSteps) * 100) -Id $progressIdMain
+Invoke-SafeStep -StepName "System Settings Configuration" -Description "System Settings Configuration" -Action {
     Invoke-RemoteScript -Url $Global:SETTINGS_GENERAL_URL -Description "System Settings Configuration"
-    Write-ProgressStep "System Settings Configuration completed" "SUCCESS"
+}
 
-    $mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Configuring PowerShell Settings..." -PercentComplete (($mainCurrentStep / $mainTotalSteps) * 100) -Id $progressIdMain
-    Write-ProgressStep "Executing PowerShell Profile Configuration..." "IN_PROGRESS"
+$mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Configuring PowerShell Settings..." -PercentComplete (($mainCurrentStep / $mainTotalSteps) * 100) -Id $progressIdMain
+Invoke-SafeStep -StepName "PowerShell Profile Configuration" -Description "PowerShell Settings Configuration" -Action {
     Invoke-RemoteScript -Url $Global:SETTINGS_POWERSHELL_URL -Description "PowerShell Settings Configuration"
-    Write-ProgressStep "PowerShell Profile Configuration completed" "SUCCESS"
+}
 
-    Write-SectionHeader "PACKAGE MANAGERS" "📦"
+Write-SectionHeader "PACKAGE MANAGERS" "📦"
 
-    $mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Configuring Winget Packages..." -PercentComplete (($mainCurrentStep / $mainTotalSteps) * 100) -Id $progressIdMain
-    Write-ProgressStep "Executing Winget Package Configuration..." "IN_PROGRESS"
+$mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Configuring Winget Packages..." -PercentComplete (($mainCurrentStep / $mainTotalSteps) * 100) -Id $progressIdMain
+Invoke-SafeStep -StepName "Winget Package Configuration" -Description "Winget Package Configuration" -Action {
     Invoke-RemoteScript -Url $Global:WINGET_CONFIG_URL -Description "Winget Package Configuration"
-    Write-ProgressStep "Winget Package Configuration completed" "SUCCESS"
-} catch {
-    Write-Host ""
-    Write-BoxedHeader "❌ CONFIGURATION ERROR" "Red" 50
-    E "An error occurred during script execution: $($_.Exception.Message)"
-    Write-Progress -Activity "Main Setup Progress" -Status "Error during script execution" -Completed -Id $progressIdMain
-    Read-Host "Press Enter to acknowledge this error and exit..."
-    exit 1
 }
 
 Write-SectionHeader "SCOOP PACKAGES" "🪣"
 
 $mainCurrentStep++; Write-Progress -Activity "Main Setup Progress" -Status "Configuring Scoop Packages..." -PercentComplete (($mainCurrentStep / $mainTotalSteps) * 100) -Id $progressIdMain
-Write-ProgressStep "Launching Scoop Package Configuration..." "IN_PROGRESS"
-$STUB = "iex (iwr '$Global:SCOOP_CONFIG_URL' -UseBasicParsing).Content"
-Start-Process powershell.exe -ArgumentList "-NoExit -ExecutionPolicy Bypass -Command `$STUB" -Wait
-if ($LASTEXITCODE -ne 0) {
-    Write-Host ""
-    Write-BoxedHeader "❌ SCOOP ERROR" "Red" 40
-    E "Error executing scoop.ps1. Exit code: $LASTEXITCODE"
-    Write-Progress -Activity "Main Setup Progress" -Status "Error executing scoop.ps1" -Completed -Id $progressIdMain
-    Read-Host "Press Enter to acknowledge this error and exit..."
-    exit 1
-} else {
-    Write-ProgressStep "Scoop Package Configuration completed" "SUCCESS"
+$scoopSuccess = Invoke-SafeStep -StepName "Scoop Package Configuration" -Description "Scoop Package Configuration" -Action {
+    $STUB = "iex (iwr '$Global:SCOOP_CONFIG_URL' -UseBasicParsing).Content"
+    Start-Process powershell.exe -ArgumentList "-NoExit -ExecutionPolicy Bypass -Command `$STUB" -Wait
+    if ($LASTEXITCODE -ne 0) {
+        throw "Error executing scoop.ps1. Exit code: $LASTEXITCODE"
+    }
 }
 
+# Display comprehensive completion summary
 Write-Host ""
-Write-BoxedHeader "🎉 SETUP COMPLETED SUCCESSFULLY!" "Green" 60
-Write-StatusLine "✅" "All configurations completed successfully." "Green"
+$totalSteps = $script:SuccessfulSteps.Count + $script:FailedSteps.Count
+$successRate = if ($totalSteps -gt 0) { [Math]::Round(($script:SuccessfulSteps.Count / $totalSteps) * 100, 1) } else { 0 }
+
+if ($script:FailedSteps.Count -eq 0) {
+    Write-BoxedHeader "🎉 SETUP COMPLETED SUCCESSFULLY!" "Green" 60
+    Write-StatusLine "✅" "All configurations completed successfully." "Green"
+} else {
+    Write-BoxedHeader "⚠️ SETUP COMPLETED WITH WARNINGS" "Yellow" 60
+    Write-StatusLine "📊" "Success Rate: $successRate% ($($script:SuccessfulSteps.Count)/$totalSteps steps)" "Yellow"
+}
+
 Write-StatusLine "📝" "Registry changes logged to: ~/Documents/RegistryChanges.jsonl" "Cyan"
 Write-StatusLine "🔄" "System restart recommended for all changes to take effect." "Yellow"
+
+# Display successful steps
+if ($script:SuccessfulSteps.Count -gt 0) {
+    Write-Host ""
+    Write-StatusLine "✅" "Successful Steps:" "Green"
+    foreach ($step in $script:SuccessfulSteps) {
+        Write-StatusLine "  ▫️" $step "Green"
+    }
+}
+
+# Display failed steps and errors
+if ($script:FailedSteps.Count -gt 0) {
+    Write-Host ""
+    Write-StatusLine "❌" "Failed Steps:" "Red"
+    foreach ($step in $script:FailedSteps) {
+        Write-StatusLine "  ▫️" $step "Red"
+    }
+    
+    Write-Host ""
+    Write-StatusLine "🔍" "Error Details:" "Yellow"
+    foreach ($error in $script:ErrorSummary) {
+        Write-StatusLine "  📍" "$($error.Step): $($error.Error)" "Red"
+    }
+    
+    Write-Host ""
+    Write-StatusLine "💡" "Some steps failed, but setup continued. Review the errors above." "Yellow"
+    Write-StatusLine "🔧" "You can manually run failed steps or re-run the entire setup." "Cyan"
+}
+
 Write-Progress -Activity "Main Setup Progress" -Completed -Id $progressIdMain
