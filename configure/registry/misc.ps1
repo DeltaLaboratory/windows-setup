@@ -1,19 +1,30 @@
 # Load dependencies - this script should only be called from main.ps1 or other scripts that have already loaded config and utils
 
-$progressIdMisc = $Global:PROGRESS_IDS.Misc
+Write-BoxedHeader "🔧 MISCELLANEOUS CONFIGURATION" "Magenta" 60
 
+$progressIdMisc = $Global:PROGRESS_IDS.Misc
 $miscTotalSteps = 3
 $miscCurrentStep = 0
 
+Write-StatusLine "⚙️" "Applying miscellaneous system configurations..." "Yellow"
+Write-StatusLine "📊" "Total Configuration Groups: $miscTotalSteps" "DarkGray"
+Write-Host ""
+
 $miscCurrentStep++; $statusMessage = "Setting Registry: Xbox Related Config..."; Write-Progress -Activity "Miscellaneous Registry Configuration" -Status $statusMessage -PercentComplete (($miscCurrentStep / $miscTotalSteps) * 100) -Id $progressIdMisc
+Write-SectionHeader "XBOX SERVICES CONFIGURATION" "🎮"
 I $statusMessage
+Write-StatusLine "🚫" "Disabling Xbox services..." "Cyan"
 Set-RegistryDword -Path "HKLM:\SYSTEM\CurrentControlSet\Services\XboxGipSvc" -Name "Start" -Value 4
 Set-RegistryDword -Path "HKLM:\SYSTEM\CurrentControlSet\Services\XblAuthManager" -Name "Start" -Value 4
 Set-RegistryDword -Path "HKLM:\SYSTEM\CurrentControlSet\Services\XblGameSave" -Name "Start" -Value 4
 Set-RegistryDword -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\XboxNetApiSvc" -Name "Start" -Value 4
+Write-Success "Xbox services disabled successfully"
 
-$miscCurrentStep++; $statusMessage = "Setting Registry: Annoying Things..."; Write-Progress -Activity "Miscellaneous Registry Configuration" -Status $statusMessage -PercentComplete (($miscCurrentStep / $miscTotalSteps) * 100) -Id $progressIdMisc
+$miscCurrentStep++; $statusMessage = "Setting Registry: Privacy & Security Policies..."; Write-Progress -Activity "Miscellaneous Registry Configuration" -Status $statusMessage -PercentComplete (($miscCurrentStep / $miscTotalSteps) * 100) -Id $progressIdMisc
+Write-SectionHeader "PRIVACY & SECURITY POLICIES" "🔒"
 I $statusMessage
+
+Write-StatusLine "📝" "Configuring PowerShell logging policies..." "Cyan"
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\PowerShellCore\ModuleLogging" -Name "EnableModuleLogging" -Value 1
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\PowerShellCore\ModuleLogging" -Name "UseWindowsPowerShellPolicySetting" -Value 1
 Set-RegistryString -Path "HKCU:\Software\Policies\Microsoft\PowerShellCore\ModuleLogging\ModuleNames" -Name "*" -Value "*"
@@ -23,10 +34,14 @@ Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\PowerShellCore\Script
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\PowerShellCore\Transcription" -Name "EnableTranscripting" -Value 1
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\PowerShellCore\Transcription" -Name "EnableInvocationHeader" -Value 1
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\PowerShellCore\Transcription" -Name "UseWindowsPowerShellPolicySetting" -Value 1
+
+Write-StatusLine "🔔" "Configuring notification and feedback settings..." "Cyan"
 Set-RegistryDword -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "NoToastApplicationNotificationOnLockScreen" -Value 1
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\Assistance\Client\1.0" -Name "NoImplicitFeedback" -Value 1
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\Windows\CloudContent" -Name "DisableTailoredExperiencesWithDiagnosticData" -Value 1
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\Windows\CloudContent" -Name "DisableThirdPartySuggestions" -Value 1
+
+Write-StatusLine "🔐" "Configuring installer and security policies..." "Cyan"
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\Windows\Installer" -Name "AlwaysInstallElevated" -Value 0
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\Windows\PowerShell\ModuleLogging" -Name "EnableModuleLogging" -Value 1
 Set-RegistryString -Path "HKCU:\Software\Policies\Microsoft\Windows\PowerShell\ModuleLogging\ModuleNames" -Name "*" -Value "*"
@@ -34,6 +49,8 @@ Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\Windows\PowerShell\Sc
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging" -Name "EnableScriptBlockInvocationLogging" -Value 1
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\Windows\PowerShell\Transcription" -Name "EnableTranscripting" -Value 1
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\Windows\PowerShell\Transcription" -Name "EnableInvocationHeader" -Value 1
+
+Write-StatusLine "📊" "Configuring Microsoft Office security settings..." "Cyan"
 Set-RegistryDword -Path "HKCU:\software\policies\microsoft\office\16.0\common\security" -Name "macroruntimescanscope" -Value 2
 Set-RegistryDword -Path "HKCU:\software\policies\microsoft\office\16.0\excel\security\external content" -Name "enableblockunsecurequeryfiles" -Value 1
 Set-RegistryDword -Path "HKCU:\software\policies\microsoft\office\16.0\excel\security\external content" -Name "disableddeserverlaunch" -Value 1
@@ -53,12 +70,16 @@ Set-RegistryDword -Path "HKCU:\Software\Microsoft\Office\16.0\Word\Security" -Na
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\Office\16.0\Word\Security" -Name "vbawarnings" -Value 4
 Set-RegistryDword -Path "HKCU:\Software\Microsoft\Office\16.0\Word\Options" -Name "DontUpdateLinks" -Value 1
 Set-RegistryDword -Path "HKCU:\Software\Microsoft\Office\16.0\Word\Options\WordMail" -Name "DontUpdateLinks" -Value 1
+
+Write-StatusLine "📡" "Configuring telemetry and privacy settings..." "Cyan"
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\office\common\clienttelemetry" -Name "DisableTelemetry" -Value 1
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\office\16.0\common\privacy" -Name "disconnectedstate" -Value 2
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\office\16.0\common\privacy" -Name "usercontentdisabled" -Value 2
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\office\16.0\common\privacy" -Name "downloadcontentdisabled" -Value 2
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\office\16.0\common\privacy" -Name "controllerconnectedservicesenabled" -Value 2
 Set-RegistryDword -Path "HKCU:\Software\Policies\Microsoft\office\common\clienttelemetry" -Name "sendtelemetry" -Value 3
+
+Write-StatusLine "🎯" "Configuring content delivery and tablet settings..." "Cyan"
 Set-RegistryDword -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-310093Enabled" -Value 0
 Set-RegistryDword -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-338389Enabled" -Value 0
 Set-RegistryDword -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\CDP" -Name "RomeSdkChannelUserAuthzPolicy" -Value 0
@@ -66,8 +87,15 @@ Set-RegistryDword -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\CDP" -N
 Set-RegistryDword -Path "HKCU:\Software\Microsoft\TabletTip\1.7" -Name "EnableAutocorrection" -Value 0
 Set-RegistryDword -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\AutoplayHandlers" -Name "DisableAutoplay" -Value 0
 
+Write-Success "Privacy & security policies configured"
+
 $miscCurrentStep++; $statusMessage = "Setting Registry: PowerShell Transcript Output Directory..."; Write-Progress -Activity "Miscellaneous Registry Configuration" -Status $statusMessage -PercentComplete (($miscCurrentStep / $miscTotalSteps) * 100) -Id $progressIdMisc
+Write-SectionHeader "POWERSHELL TRANSCRIPT CONFIGURATION" "📝"
 I $statusMessage
+Write-StatusLine "📁" "Setting PowerShell transcript output directory..." "Cyan"
 Set-RegistryString -Path "HKCU:\\Software\\Policies\\Microsoft\\Windows\\PowerShell\\Transcription" -Name "OutputDirectory" -Value "C:\\Users\\$env:USERNAME\\Documents\\PowerShell\\Transcripts"
+Write-Success "PowerShell transcript directory configured"
 
 Write-Progress -Activity "Miscellaneous Registry Configuration" -Completed -Id $progressIdMisc
+Write-Host ""
+Write-BoxedHeader "✅ MISCELLANEOUS CONFIGURATION COMPLETED" "Green" 50

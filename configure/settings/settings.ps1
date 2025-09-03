@@ -1,12 +1,19 @@
 # Load dependencies - this script should only be called from main.ps1 or other scripts that have already loaded config and utils
 
-$progressIdSettings = $Global:PROGRESS_IDS.Settings
+Write-BoxedHeader "⚙️ SYSTEM SETTINGS CONFIGURATION" "Green" 60
 
+$progressIdSettings = $Global:PROGRESS_IDS.Settings
 $settingsTotalSteps = 3
 $settingsCurrentStep = 0
 
+Write-StatusLine "🔧" "Configuring system-level settings..." "Yellow"
+Write-StatusLine "📊" "Total Configuration Groups: $settingsTotalSteps" "DarkGray"
+Write-Host ""
+
 $settingsCurrentStep++; $statusMessage = "Setting Host Information..."; Write-Progress -Activity "System Settings Configuration" -Status $statusMessage -PercentComplete (($settingsCurrentStep / $settingsTotalSteps) * 100) -Id $progressIdSettings
+Write-SectionHeader "HOSTS FILE CONFIGURATION" "🌐"
 I "Setting Host Information..."
+Write-StatusLine "🚫" "Adding ad-blocking entries to hosts file..." "Cyan"
 try {
     Add-Content -Path $env:windir\System32\drivers\etc\hosts -Value @"
 0.0.0.0 ad.kakao.com
@@ -21,32 +28,36 @@ try {
 0.0.0.0 www.msn.com
 0.0.0.0 sb.scorecardresearch.com
 "@ -Force -Encoding utf8 -ErrorAction Stop
-    I "Host Configured Successfully!"
+    Write-Success "Host file configured successfully!"
 } catch {
     E "Error configuring host file: $($_.Exception.Message)"
-    throw $_ # Re-throw the exception to be caught by main.ps1
+    throw $_
 }
 
 $settingsCurrentStep++; $statusMessage = "Configuring Sudo..."; Write-Progress -Activity "System Settings Configuration" -Status $statusMessage -PercentComplete (($settingsCurrentStep / $settingsTotalSteps) * 100) -Id $progressIdSettings
+Write-SectionHeader "SUDO CONFIGURATION" "🔐"
 I "Configuring Sudo..."
+Write-StatusLine "⚡" "Enabling sudo for normal users..." "Cyan"
 sudo config --enable normal
 if ($LASTEXITCODE -ne 0) {
     E "Error configuring sudo. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
-    throw "Error configuring sudo. Exit code: $LASTEXITCODE" # Re-throw to be caught by main.ps1
+    throw "Error configuring sudo. Exit code: $LASTEXITCODE"
 } else {
-    I "Sudo Configured Successfully!"
+    Write-Success "Sudo configured successfully!"
 }
 
 $settingsCurrentStep++; $statusMessage = "Configuring Network for Winget..."; Write-Progress -Activity "System Settings Configuration" -Status $statusMessage -PercentComplete (($settingsCurrentStep / $settingsTotalSteps) * 100) -Id $progressIdSettings
+Write-SectionHeader "NETWORK OPTIMIZATION" "🌐"
 I "Configuring Network for Winget..."
+Write-StatusLine "📶" "Optimizing TCP auto-tuning for better performance..." "Cyan"
 netsh int tcp set global autotuninglevel=normal
 if ($LASTEXITCODE -ne 0) {
     E "Error configuring network for Winget. Exit code: $LASTEXITCODE"
-    # Optionally, exit the script or take other error handling actions
-    throw "Error configuring network for Winget. Exit code: $LASTEXITCODE" # Re-throw to be caught by main.ps1
+    throw "Error configuring network for Winget. Exit code: $LASTEXITCODE"
 } else {
-    I "Network Configured."
+    Write-Success "Network configuration completed successfully!"
 }
 
 Write-Progress -Activity "System Settings Configuration" -Completed -Id $progressIdSettings
+Write-Host ""
+Write-BoxedHeader "✅ SYSTEM SETTINGS COMPLETED" "Green" 50

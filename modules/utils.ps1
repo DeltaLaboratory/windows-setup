@@ -1,9 +1,74 @@
+# TUI Helper Functions for Enhanced Visual Experience
+function Write-BoxedHeader {
+    param(
+        [string]$Title,
+        [string]$Color = "Cyan",
+        [int]$Width = 60
+    )
+
+    $padding = [Math]::Max(0, ($Width - $Title.Length - 2) / 2)
+    $leftPad = " " * [Math]::Floor($padding)
+    $rightPad = " " * [Math]::Ceiling($padding)
+
+    Write-Host ""
+    Write-Host ("┌" + "─" * ($Width - 2) + "┐") -ForegroundColor $Color
+    Write-Host ("│" + $leftPad + $Title + $rightPad + "│") -ForegroundColor $Color
+    Write-Host ("└" + "─" * ($Width - 2) + "┘") -ForegroundColor $Color
+    Write-Host ""
+}
+
+function Write-StatusLine {
+    param(
+        [string]$Icon,
+        [string]$Message,
+        [string]$Color = "White"
+    )
+    Write-Host " $Icon " -ForegroundColor $Color -NoNewline
+    Write-Host $Message -ForegroundColor $Color
+}
+
+function Write-ProgressStep {
+    param(
+        [string]$Step,
+        [string]$Status = "IN_PROGRESS"
+    )
+
+    $icon = switch ($Status) {
+        "IN_PROGRESS" { "⚡" }
+        "SUCCESS" { "✅" }
+        "ERROR" { "❌" }
+        "WARNING" { "⚠️" }
+        default { "•" }
+    }
+
+    $color = switch ($Status) {
+        "IN_PROGRESS" { "Yellow" }
+        "SUCCESS" { "Green" }
+        "ERROR" { "Red" }
+        "WARNING" { "Magenta" }
+        default { "Gray" }
+    }
+
+    Write-StatusLine -Icon $icon -Message $Step -Color $color
+}
+
+function Write-SectionHeader {
+    param(
+        [string]$Title,
+        [string]$Icon = "📋"
+    )
+    Write-Host ""
+    Write-Host " $Icon $Title " -ForegroundColor "Cyan" -BackgroundColor "DarkBlue"
+    Write-Host (" " + "─" * ($Title.Length + 4)) -ForegroundColor "Cyan"
+}
+
+# Enhanced Logging Functions
 function I {
     param (
         [Parameter(Mandatory = $true)]
         [string]$Output
     )
-    Write-Host $Output -ForegroundColor White
+    Write-StatusLine "ℹ️" $Output "White"
 }
 
 function D {
@@ -11,7 +76,7 @@ function D {
         [Parameter(Mandatory = $true)]
         [string]$Output
     )
-    Write-Host $Output -ForegroundColor DarkGray
+    Write-StatusLine "🔍" $Output "DarkGray"
 }
 
 function E {
@@ -19,9 +84,26 @@ function E {
         [Parameter(Mandatory = $true)]
         [string]$Output
     )
-    Write-Host $Output -ForegroundColor Red
+    Write-StatusLine "❌" $Output "Red"
 }
 
+function Write-Success {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$Output
+    )
+    Write-StatusLine "✅" $Output "Green"
+}
+
+function Write-Warning {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$Output
+    )
+    Write-StatusLine "⚠️" $Output "Yellow"
+}
+
+# Enhanced Registry Functions
 function Set-RegistryValue {
     param(
         [string]$Path,
@@ -45,7 +127,7 @@ function Set-RegistryValue {
 
         # Set the registry property
         New-ItemProperty -Path $Path -Name $Name -Value $Value -PropertyType $Type -Force | Out-Null
-        D "Set registry value: $($Path)\$($Name) = $($Value) ($($Type))"
+        D "Registry: $($Path)\$($Name) = $($Value) ($($Type))"
 
         # Create change record
         $changeRecord = @{
@@ -86,5 +168,6 @@ function Set-RegistryString {
     Set-RegistryValue -Path $Path -Name $Name -Value $Value -Type String
 }
 
+# Set console colors for better TUI experience
 $Host.UI.RawUI.BackgroundColor = 'Black'
 $Host.UI.RawUI.ForegroundColor = 'White'

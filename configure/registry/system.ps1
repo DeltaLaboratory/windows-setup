@@ -1,5 +1,3 @@
-Invoke-RestMethod -Uri "https://raw.githubusercontent.com/DeltaLaboratory/windows-setup/refs/heads/main/modules/utils.ps1" | Invoke-Expression
-
 $systemTotalSteps = 11
 $systemCurrentStep = 0
 $progressIdSystem = $Global:PROGRESS_IDS.System # Using centralized progress ID
@@ -60,3 +58,4 @@ I $statusMessage
 Set-RegistryDword -Path "HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Sudo" -Name "Enabled" -Value 1
 
 Write-Progress -Activity "System Registry Configuration" -Completed -Id $progressIdSystem
+

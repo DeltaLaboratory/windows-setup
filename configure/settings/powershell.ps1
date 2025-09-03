@@ -1,20 +1,29 @@
 # Load dependencies - this script should only be called from main.ps1 or other scripts that have already loaded config and utils
 
+Write-BoxedHeader "⚡ POWERSHELL PROFILE CONFIGURATION" "Blue" 60
+
 $progressIdPowershell = $Global:PROGRESS_IDS.PowerShell
-$psTotalSteps = 1 # Only one main operation: setting up the profile
+$psTotalSteps = 1
 $psCurrentStep = 0
 
+Write-StatusLine "🔧" "Setting up PowerShell 7 profile and environment..." "Yellow"
+Write-StatusLine "📊" "Total Configuration Steps: $psTotalSteps" "DarkGray"
+Write-Host ""
+
 $psCurrentStep++; $statusMessage = "Setting up Powershell 7 Profile..."; Write-Progress -Activity "PowerShell Profile Configuration" -Status $statusMessage -PercentComplete (($psCurrentStep / $psTotalSteps) * 100) -Id $progressIdPowershell
-I "Setting up Powershell 7..."
-I "Setting up Powershell 7 Profile..."
+Write-SectionHeader "POWERSHELL 7 PROFILE SETUP" "📝"
+I "Setting up PowerShell 7..."
+I "Setting up PowerShell 7 Profile..."
 
 try {
+    Write-StatusLine "📁" "Creating PowerShell directories..." "Cyan"
     New-Item -Path $env:USERPROFILE\Documents\PowerShell -ItemType Directory -Force -ErrorAction Stop | Out-Null
-    New-Item -Path $env:USERPROFILE\Documents\PowerShell\Transcripts -ItemType Directory -Force -ErrorAction Stop | Out-Null # For Transcripts
+    New-Item -Path $env:USERPROFILE\Documents\PowerShell\Transcripts -ItemType Directory -Force -ErrorAction Stop | Out-Null
     New-Item -Path $env:USERPROFILE\Documents\PowerShell\Microsoft.PowerShell_profile.ps1 -ItemType File -Force -ErrorAction Stop | Out-Null
 
+    Write-StatusLine "📝" "Writing custom PowerShell profile..." "Cyan"
     Write-Output @"
-# PowerShell 7 Path Ingnore Fix
+# PowerShell 7 Path Ignore Fix
 `$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
 # MSYS2 Path
@@ -77,11 +86,21 @@ function prompt {
     #endregion
 }
 "@ | Out-File -FilePath $env:USERPROFILE\Documents\PowerShell\Microsoft.PowerShell_profile.ps1 -Encoding utf8 -ErrorAction Stop
-    I "Setting up Powershell 7 Profile Completed Successfully!"
+
+    Write-StatusLine "✨" "Profile features configured:" "Green"
+    Write-StatusLine "  🎨" "Custom prompt with user, path, and admin indicator" "DarkGray"
+    Write-StatusLine "  ⏱️" "Command execution time tracking" "DarkGray"
+    Write-StatusLine "  🌿" "Git branch status in prompt" "DarkGray"
+    Write-StatusLine "  🛤️" "Proper PATH environment management" "DarkGray"
+    Write-StatusLine "  🔧" "MSYS2 integration" "DarkGray"
+
+    Write-Success "PowerShell 7 Profile setup completed successfully!"
 } catch {
-    E "Error setting up Powershell 7 profile: $($_.Exception.Message)"
-    Write-Progress -Activity "PowerShell Profile Configuration" -Status "Error setting up profile" -Completed -Id $progressIdPowershell # Mark as completed to remove
-    # Optionally, exit the script or take other error handling actions
-    throw $_ # Re-throw the exception to be caught by main.ps1
+    E "Error setting up PowerShell 7 profile: $($_.Exception.Message)"
+    Write-Progress -Activity "PowerShell Profile Configuration" -Status "Error setting up profile" -Completed -Id $progressIdPowershell
+    throw $_
 }
+
 Write-Progress -Activity "PowerShell Profile Configuration" -Completed -Id $progressIdPowershell
+Write-Host ""
+Write-BoxedHeader "✅ POWERSHELL PROFILE COMPLETED" "Green" 50
