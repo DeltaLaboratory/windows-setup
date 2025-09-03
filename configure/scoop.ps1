@@ -1,6 +1,7 @@
-Invoke-RestMethod -Uri "https://raw.githubusercontent.com/DeltaLaboratory/windows-setup/refs/heads/main/modules/utils.ps1" | Invoke-Expression
+# Load dependencies - this script should only be called from main.ps1 or other scripts that have already loaded config and utils
 
-$progressIdScoop = 9
+$progressIdScoop = $Global:PROGRESS_IDS.Scoop
+
 $scoopTotalSteps = 12 # Adjusted based on logical grouping of installations
 $scoopCurrentStep = 0
 

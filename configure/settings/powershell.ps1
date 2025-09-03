@@ -1,4 +1,6 @@
-$progressIdPowershell = 7
+# Load dependencies - this script should only be called from main.ps1 or other scripts that have already loaded config and utils
+
+$progressIdPowershell = $Global:PROGRESS_IDS.PowerShell
 $psTotalSteps = 1 # Only one main operation: setting up the profile
 $psCurrentStep = 0
 

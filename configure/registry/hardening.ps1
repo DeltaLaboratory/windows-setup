@@ -1,4 +1,7 @@
-$progressIdHardening = 4
+# Load dependencies - this script should only be called from main.ps1 or other scripts that have already loaded config and utils
+
+$progressIdHardening = $Global:PROGRESS_IDS.Hardening
+
 $hardeningTotalSteps = 2
 $hardeningCurrentStep = 0
 

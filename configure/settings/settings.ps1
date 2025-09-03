@@ -1,4 +1,7 @@
-$progressIdSettings = 6
+# Load dependencies - this script should only be called from main.ps1 or other scripts that have already loaded config and utils
+
+$progressIdSettings = $Global:PROGRESS_IDS.Settings
+
 $settingsTotalSteps = 3
 $settingsCurrentStep = 0
 

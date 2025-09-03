@@ -1,4 +1,7 @@
-$progressIdMisc = 5
+# Load dependencies - this script should only be called from main.ps1 or other scripts that have already loaded config and utils
+
+$progressIdMisc = $Global:PROGRESS_IDS.Misc
+
 $miscTotalSteps = 3
 $miscCurrentStep = 0
 

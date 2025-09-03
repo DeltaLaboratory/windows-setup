@@ -1,6 +1,8 @@
+Invoke-RestMethod -Uri "https://raw.githubusercontent.com/DeltaLaboratory/windows-setup/refs/heads/main/modules/utils.ps1" | Invoke-Expression
+
 $systemTotalSteps = 11
 $systemCurrentStep = 0
-$progressIdSystem = 2 # Using a specific ID for this script's progress bar
+$progressIdSystem = $Global:PROGRESS_IDS.System # Using centralized progress ID
 
 $systemCurrentStep++; $statusMessage = "Setting Global Codepage..."; Write-Progress -Activity "System Registry Configuration" -Status $statusMessage -PercentComplete (($systemCurrentStep / $systemTotalSteps) * 100) -Id $progressIdSystem
 I $statusMessage

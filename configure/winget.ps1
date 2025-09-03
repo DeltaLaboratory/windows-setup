@@ -1,4 +1,6 @@
-$progressIdWinget = 8
+# Load dependencies - this script should only be called from main.ps1 or other scripts that have already loaded config and utils
+
+$progressIdWinget = $Global:PROGRESS_IDS.Winget
 $wingetTotalSteps = 8 # Installation + Upgrade + 6 packages
 $wingetCurrentStep = 0
 
