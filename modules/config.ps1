@@ -39,20 +39,38 @@ function Get-ProgressId {
     return $Global:PROGRESS_IDS[$Name]
 }
 
-# Function to safely invoke remote script with error handling
+# Function to safely invoke remote script with error handling and retry logic
 function Invoke-RemoteScript {
     param(
         [string]$Url,
-        [string]$Description = "Remote script"
+        [string]$Description = "Remote script",
+        [int]$MaxRetries = 3,
+        [int]$RetryDelaySeconds = 2
     )
 
-    try {
-        I "Executing $Description from: $Url"
-        Invoke-RestMethod -Uri $Url | Invoke-Expression
-    } catch {
-        E "Failed to execute $Description from $Url"
-        E "Error: $($_.Exception.Message)"
-        throw $_
+    for ($attempt = 1; $attempt -le $MaxRetries; $attempt++) {
+        try {
+            if ($attempt -gt 1) {
+                Write-Warning "Retry attempt $attempt/$MaxRetries for $Description"
+                Start-Sleep -Seconds ($RetryDelaySeconds * $attempt)
+            }
+            
+            I "Executing $Description from: $Url (Attempt $attempt/$MaxRetries)"
+            $scriptContent = Invoke-RestMethod -Uri $Url -TimeoutSec 30
+            Invoke-Expression $scriptContent
+            return # Success - exit the retry loop
+        } catch {
+            $errorMessage = $_.Exception.Message
+            if ($attempt -eq $MaxRetries) {
+                # Last attempt failed
+                E "Failed to execute $Description from $Url after $MaxRetries attempts"
+                E "Final error: $errorMessage"
+                throw "Failed to execute $Description after $MaxRetries attempts. Last error: $errorMessage"
+            } else {
+                # Not the last attempt, continue retrying
+                Write-Warning "Attempt $attempt failed for $Description`: $errorMessage"
+            }
+        }
     }
 }
 
