@@ -10,13 +10,13 @@ Write-StatusLine "📋" "Installing and configuring essential applications..." "
 Write-StatusLine "📊" "Total Package Groups: $wingetTotalSteps" "DarkGray"
 Write-Host ""
 
-$wingetCurrentStep++; $statusMessage = "Starting Winget Configuration..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete (($wingetCurrentStep / $wingetTotalSteps) * 100) -Id $progressIdWinget
+$wingetCurrentStep++; $statusMessage = "Starting Winget Configuration..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($wingetCurrentStep / $wingetTotalSteps) * 100))) -Id $progressIdWinget
 Write-SectionHeader "WINGET INSTALLATION & SETUP" "🔧"
 I $statusMessage
 
 # Ensure Winget is installed
 if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-    $statusMessage = "Winget not found. Installing prerequisites and Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete (($wingetCurrentStep / $wingetTotalSteps) * 100) -Id $progressIdWinget
+    $statusMessage = "Winget not found. Installing prerequisites and Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($wingetCurrentStep / $wingetTotalSteps) * 100))) -Id $progressIdWinget
     Write-StatusLine "❌" "Winget not found. Installing prerequisites..." "Yellow"
 
     Write-StatusLine "📦" "Installing Microsoft VCLibs Desktop Framework Package..." "Cyan"
@@ -45,11 +45,11 @@ if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
         throw $_
     }
 } else {
-    $statusMessage = "Winget is already installed."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete (($wingetCurrentStep / $wingetTotalSteps) * 100) -Id $progressIdWinget
+    $statusMessage = "Winget is already installed."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($wingetCurrentStep / $wingetTotalSteps) * 100))) -Id $progressIdWinget
     Write-StatusLine "✅" "Winget is already installed" "Green"
 }
 
-$wingetCurrentStep++; $statusMessage = "Upgrading Windows Package Manager (Winget)..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete (($wingetCurrentStep / $wingetTotalSteps) * 100) -Id $progressIdWinget
+$wingetCurrentStep++; $statusMessage = "Upgrading Windows Package Manager (Winget)..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($wingetCurrentStep / $wingetTotalSteps) * 100))) -Id $progressIdWinget
 Write-SectionHeader "SYSTEM UPDATES" "🔄"
 I $statusMessage
 Write-StatusLine "⬆️" "Upgrading all installed packages..." "Cyan"
@@ -64,7 +64,7 @@ if ($LASTEXITCODE -ne 0) {
 # Package Installation Section
 Write-SectionHeader "APPLICATION INSTALLATIONS" "📱"
 
-$wingetCurrentStep++; $statusMessage = "Installing Bandizip via Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete (($wingetCurrentStep / $wingetTotalSteps) * 100) -Id $progressIdWinget
+$wingetCurrentStep++; $statusMessage = "Installing Bandizip via Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($wingetCurrentStep / $wingetTotalSteps) * 100))) -Id $progressIdWinget
 Write-StatusLine "🗜️" "Installing Bandizip archive manager..." "Cyan"
 winget install Bandisoft.Bandizip --accept-package-agreements --accept-source-agreements
 if ($LASTEXITCODE -ne 0) {
@@ -74,7 +74,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Success "Bandizip installed successfully!"
 }
 
-$wingetCurrentStep++; $statusMessage = "Installing Bandiview via Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete (($wingetCurrentStep / $wingetTotalSteps) * 100) -Id $progressIdWinget
+$wingetCurrentStep++; $statusMessage = "Installing Bandiview via Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($wingetCurrentStep / $wingetTotalSteps) * 100))) -Id $progressIdWinget
 Write-StatusLine "🖼️" "Installing Bandiview image viewer..." "Cyan"
 winget install Bandisoft.Bandiview --accept-package-agreements --accept-source-agreements
 if ($LASTEXITCODE -ne 0) {
@@ -84,7 +84,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Success "Bandiview installed successfully!"
 }
 
-$wingetCurrentStep++; $statusMessage = "Installing JetBrains Toolbox via Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete (($wingetCurrentStep / $wingetTotalSteps) * 100) -Id $progressIdWinget
+$wingetCurrentStep++; $statusMessage = "Installing JetBrains Toolbox via Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($wingetCurrentStep / $wingetTotalSteps) * 100))) -Id $progressIdWinget
 Write-StatusLine "🧰" "Installing JetBrains Toolbox..." "Cyan"
 winget install JetBrains.Toolbox --accept-package-agreements --accept-source-agreements
 if ($LASTEXITCODE -ne 0) {
@@ -94,7 +94,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Success "JetBrains Toolbox installed successfully!"
 }
 
-$wingetCurrentStep++; $statusMessage = "Installing Powershell 7 via Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete (($wingetCurrentStep / $wingetTotalSteps) * 100) -Id $progressIdWinget
+$wingetCurrentStep++; $statusMessage = "Installing Powershell 7 via Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($wingetCurrentStep / $wingetTotalSteps) * 100))) -Id $progressIdWinget
 Write-StatusLine "⚡" "Installing PowerShell 7..." "Cyan"
 winget install Microsoft.PowerShell --accept-package-agreements --accept-source-agreements
 if ($LASTEXITCODE -ne 0) {
@@ -104,7 +104,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Success "PowerShell 7 installed successfully!"
 }
 
-$wingetCurrentStep++; $statusMessage = "Installing Snipping Tool via Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete (($wingetCurrentStep / $wingetTotalSteps) * 100) -Id $progressIdWinget
+$wingetCurrentStep++; $statusMessage = "Installing Snipping Tool via Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($wingetCurrentStep / $wingetTotalSteps) * 100))) -Id $progressIdWinget
 Write-StatusLine "✂️" "Installing Snipping Tool..." "Cyan"
 winget install 9MZ95KL8MR0L --accept-package-agreements --accept-source-agreements
 if ($LASTEXITCODE -ne 0) {
@@ -114,7 +114,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Success "Snipping Tool installed successfully!"
 }
 
-$wingetCurrentStep++; $statusMessage = "Installing PowerToys via Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete (($wingetCurrentStep / $wingetTotalSteps) * 100) -Id $progressIdWinget
+$wingetCurrentStep++; $statusMessage = "Installing PowerToys via Winget..."; Write-Progress -Activity "Winget Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($wingetCurrentStep / $wingetTotalSteps) * 100))) -Id $progressIdWinget
 Write-StatusLine "🔧" "Installing Microsoft PowerToys..." "Cyan"
 winget install Microsoft.Powertoys --accept-package-agreements --accept-source-agreements
 if ($LASTEXITCODE -ne 0) {

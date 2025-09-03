@@ -10,7 +10,7 @@ Write-StatusLine "🔧" "Setting up PowerShell 7 profile and environment..." "Ye
 Write-StatusLine "📊" "Total Configuration Steps: $psTotalSteps" "DarkGray"
 Write-Host ""
 
-$psCurrentStep++; $statusMessage = "Setting up Powershell 7 Profile..."; Write-Progress -Activity "PowerShell Profile Configuration" -Status $statusMessage -PercentComplete (($psCurrentStep / $psTotalSteps) * 100) -Id $progressIdPowershell
+$psCurrentStep++; $statusMessage = "Setting up Powershell 7 Profile..."; Write-Progress -Activity "PowerShell Profile Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($psCurrentStep / $psTotalSteps) * 100))) -Id $progressIdPowershell
 Write-SectionHeader "POWERSHELL 7 PROFILE SETUP" "📝"
 I "Setting up PowerShell 7..."
 I "Setting up PowerShell 7 Profile..."

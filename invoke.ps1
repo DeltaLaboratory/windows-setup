@@ -289,8 +289,8 @@ if ($script:LoaderWarnings.Count -gt 0) {
 if ($script:LoaderErrors.Count -gt 0) {
     Write-Host ""
     Write-StatusLine "❌" "Errors:" "Red"
-    foreach ($error in $script:LoaderErrors) {
-        Write-StatusLine "  ▫️" $error "Red"
+    foreach ($errorItem in $script:LoaderErrors) {
+        Write-StatusLine "  ▫️" $errorItem "Red"
     }
     Write-Host ""
     Write-StatusLine "💡" "Troubleshooting Options:" "Yellow"
