@@ -110,5 +110,3 @@ Write-StatusLine "🎉" "Winget configuration completed successfully!" "Green"
 Write-Progress -Activity "Winget Package Management" -Completed -Id $progressIdWinget
 Write-Host ""
 Write-BoxedHeader "✅ WINGET PACKAGES COMPLETED" "Green" 50
-
-exit
