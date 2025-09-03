@@ -1,4 +1,10 @@
-# Load dependencies - this script should only be called from main.ps1 or other scripts that have already loaded config and utils
+# Load dependencies - this script can be called from main.ps1 or executed independently
+# When executed in a subprocess, it needs to load its own dependencies
+if (-not (Get-Command Write-BoxedHeader -ErrorAction SilentlyContinue)) {
+    # Load configuration and utilities when not already available
+    Invoke-RestMethod -Uri "https://raw.githubusercontent.com/DeltaLaboratory/windows-setup/refs/heads/main/modules/config.ps1" | Invoke-Expression
+    Invoke-RestMethod -Uri "https://raw.githubusercontent.com/DeltaLaboratory/windows-setup/refs/heads/main/modules/utils.ps1" | Invoke-Expression
+}
 
 Write-BoxedHeader "🪣 SCOOP PACKAGE MANAGER" "DarkYellow" 70
 
