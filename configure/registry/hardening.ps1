@@ -10,7 +10,7 @@ Write-StatusLine "🔒" "Applying security hardening configurations..." "Yellow"
 Write-StatusLine "📊" "Total Security Groups: $hardeningTotalSteps" "DarkGray"
 Write-Host ""
 
-$hardeningCurrentStep++; $statusMessage = "Setting Registry: BitLocker Config..."; Write-Progress -Activity "Hardening Registry Configuration" -Status $statusMessage -PercentComplete (($hardeningCurrentStep / $hardeningTotalSteps) * 100) -Id $progressIdHardening
+$hardeningCurrentStep++; $statusMessage = "Setting Registry: BitLocker Config..."; Write-Progress -Activity "Hardening Registry Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($hardeningCurrentStep / $hardeningTotalSteps) * 100))) -Id $progressIdHardening
 Write-SectionHeader "BITLOCKER ENCRYPTION SETTINGS" "🔐"
 I $statusMessage
 Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\FVE" -Name "EncryptionMethodWithXtsOs" -Value 6
@@ -27,7 +27,7 @@ Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\FVE" -Name "OSHardwar
 Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\FVE" -Name "MinimumPIN" -Value 8
 Write-Success "BitLocker encryption settings configured"
 
-$hardeningCurrentStep++; $statusMessage = "Setting Registry: Exploit Prevention Config..."; Write-Progress -Activity "Hardening Registry Configuration" -Status $statusMessage -PercentComplete (($hardeningCurrentStep / $hardeningTotalSteps) * 100) -Id $progressIdHardening
+$hardeningCurrentStep++; $statusMessage = "Setting Registry: Exploit Prevention Config..."; Write-Progress -Activity "Hardening Registry Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($hardeningCurrentStep / $hardeningTotalSteps) * 100))) -Id $progressIdHardening
 Write-SectionHeader "WINDOWS DEFENDER & EXPLOIT PROTECTION" "🛡️"
 I $statusMessage
 

@@ -10,7 +10,7 @@ Write-StatusLine "🚀" "Installing development tools and applications..." "Yell
 Write-StatusLine "📊" "Total Installation Groups: $scoopTotalSteps" "DarkGray"
 Write-Host ""
 
-$scoopCurrentStep++; $statusMessage = "Installing Scoop, Updating, and Configuring SQLite..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete (($scoopCurrentStep / $scoopTotalSteps) * 100) -Id $progressIdScoop
+$scoopCurrentStep++; $statusMessage = "Installing Scoop, Updating, and Configuring SQLite..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
 Write-SectionHeader "SCOOP INSTALLATION & SETUP" "🔧"
 Write-StatusLine "📦" "Installing Scoop package manager..." "Cyan"
 Invoke-Expression "& {$(Invoke-RestMethod https://get.scoop.sh)} -RunAsAdmin"
@@ -39,7 +39,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Success "Scoop SQLite configuration completed!"
 }
 
-$scoopCurrentStep++; $statusMessage = "Installing Git & Git-LFS via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete (($scoopCurrentStep / $scoopTotalSteps) * 100) -Id $progressIdScoop
+$scoopCurrentStep++; $statusMessage = "Installing Git & Git-LFS via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
 Write-SectionHeader "VERSION CONTROL TOOLS" "🌿"
 Write-StatusLine "📚" "Installing Git version control system..." "Cyan"
 scoop install git
@@ -81,7 +81,7 @@ Write-Output @"
 "@ | Out-File -FilePath $env:USERPROFILE\.gitconfig -Encoding utf8
 Write-Success "Git configuration completed!"
 
-$scoopCurrentStep++; $statusMessage = "Setting up Scoop Buckets (Extras, Nerd-Fonts)..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete (($scoopCurrentStep / $scoopTotalSteps) * 100) -Id $progressIdScoop
+$scoopCurrentStep++; $statusMessage = "Setting up Scoop Buckets (Extras, Nerd-Fonts)..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
 Write-SectionHeader "SCOOP BUCKETS SETUP" "📦"
 Write-StatusLine "🎯" "Adding extras bucket for additional applications..." "Cyan"
 scoop bucket add extras
@@ -101,7 +101,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Success "Scoop nerd-fonts bucket added!"
 }
 
-$scoopCurrentStep++; $statusMessage = "Installing Fonts (IBM Plex) via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete (($scoopCurrentStep / $scoopTotalSteps) * 100) -Id $progressIdScoop
+$scoopCurrentStep++; $statusMessage = "Installing Fonts (IBM Plex) via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
 Write-SectionHeader "DEVELOPER FONTS" "🔤"
 Write-StatusLine "📝" "Installing IBM Plex Mono font..." "Cyan"
 scoop install IBMPlexMono
@@ -121,7 +121,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Success "IBM Plex Sans KR installed!"
 }
 
-$scoopCurrentStep++; $statusMessage = "Installing Go via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete (($scoopCurrentStep / $scoopTotalSteps) * 100) -Id $progressIdScoop
+$scoopCurrentStep++; $statusMessage = "Installing Go via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
 Write-SectionHeader "PROGRAMMING LANGUAGES" "👨‍💻"
 Write-StatusLine "🐹" "Installing Go programming language..." "Cyan"
 scoop install go
@@ -132,7 +132,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Success "Go programming language installed!"
 }
 
-$scoopCurrentStep++; $statusMessage = "Installing Node.js & Setting up Corepack/pnpm via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete (($scoopCurrentStep / $scoopTotalSteps) * 100) -Id $progressIdScoop
+$scoopCurrentStep++; $statusMessage = "Installing Node.js & Setting up Corepack/pnpm via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
 Write-StatusLine "🟢" "Installing Node.js runtime..." "Cyan"
 scoop install nodejs
 if ($LASTEXITCODE -ne 0) {
@@ -161,7 +161,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Success "  pnpm installed!"
 }
 
-$scoopCurrentStep++; $statusMessage = "Installing Python & Setting up Poetry via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete (($scoopCurrentStep / $scoopTotalSteps) * 100) -Id $progressIdScoop
+$scoopCurrentStep++; $statusMessage = "Installing Python & Setting up Poetry via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
 Write-StatusLine "🐍" "Installing Python programming language..." "Cyan"
 scoop install python
 if ($LASTEXITCODE -ne 0) {
@@ -180,7 +180,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Success "Poetry installed!"
 }
 
-$scoopCurrentStep++; $statusMessage = "Installing GPG via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete (($scoopCurrentStep / $scoopTotalSteps) * 100) -Id $progressIdScoop
+$scoopCurrentStep++; $statusMessage = "Installing GPG via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
 Write-SectionHeader "SECURITY TOOLS" "🔐"
 Write-StatusLine "🔒" "Installing GPG for cryptographic operations..." "Cyan"
 scoop install gpg
@@ -191,7 +191,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Success "GPG installed!"
 }
 
-$scoopCurrentStep++; $statusMessage = "Installing Github CLI via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete (($scoopCurrentStep / $scoopTotalSteps) * 100) -Id $progressIdScoop
+$scoopCurrentStep++; $statusMessage = "Installing Github CLI via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
 Write-StatusLine "🐙" "Installing GitHub CLI..." "Cyan"
 scoop install gh
 if ($LASTEXITCODE -ne 0) {
@@ -201,7 +201,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Success "GitHub CLI installed!"
 }
 
-$scoopCurrentStep++; $statusMessage = "Installing MSYS2 & Setting up via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete (($scoopCurrentStep / $scoopTotalSteps) * 100) -Id $progressIdScoop
+$scoopCurrentStep++; $statusMessage = "Installing MSYS2 & Setting up via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
 Write-SectionHeader "DEVELOPMENT ENVIRONMENT" "🔨"
 Write-StatusLine "🛠️" "Installing MSYS2 Unix-like environment..." "Cyan"
 scoop install msys2
@@ -244,7 +244,7 @@ $msys2SetupBatchFilePath = Join-Path -Path $env:USERPROFILE\Documents -ChildPath
 $msys2SetupBatchFile | Out-File -FilePath $msys2SetupBatchFilePath -Encoding utf8
 Write-Success "MSYS2 setup completed!"
 
-$scoopCurrentStep++; $statusMessage = "Installing Notepad++ via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete (($scoopCurrentStep / $scoopTotalSteps) * 100) -Id $progressIdScoop
+$scoopCurrentStep++; $statusMessage = "Installing Notepad++ via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
 Write-SectionHeader "PRODUCTIVITY APPLICATIONS" "📝"
 Write-StatusLine "📄" "Installing Notepad++ text editor..." "Cyan"
 scoop install notepadplusplus
@@ -255,7 +255,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Success "Notepad++ installed!"
 }
 
-$scoopCurrentStep++; $statusMessage = "Installing SMPlayer via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete (($scoopCurrentStep / $scoopTotalSteps) * 100) -Id $progressIdScoop
+$scoopCurrentStep++; $statusMessage = "Installing SMPlayer via Scoop..."; Write-Progress -Activity "Scoop Package Management" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($scoopCurrentStep / $scoopTotalSteps) * 100))) -Id $progressIdScoop
 Write-StatusLine "🎬" "Installing SMPlayer media player..." "Cyan"
 scoop install extras/smplayer
 if ($LASTEXITCODE -ne 0) {

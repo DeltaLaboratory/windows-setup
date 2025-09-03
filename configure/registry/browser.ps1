@@ -10,14 +10,14 @@ Write-StatusLine "🔧" "Configuring Microsoft Edge browser settings..." "Yellow
 Write-StatusLine "📊" "Total Configuration Groups: $browserTotalSteps" "DarkGray"
 Write-Host ""
 
-$browserCurrentStep++; $statusMessage = "Setting Registry: Edge Config..."; Write-Progress -Activity "Browser Registry Configuration" -Status $statusMessage -PercentComplete (($browserCurrentStep / $browserTotalSteps) * 100) -Id $progressIdBrowser
+$browserCurrentStep++; $statusMessage = "Setting Registry: Edge Config..."; Write-Progress -Activity "Browser Registry Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($browserCurrentStep / $browserTotalSteps) * 100))) -Id $progressIdBrowser
 Write-SectionHeader "EDGE BASIC CONFIGURATION" "🏠"
 I $statusMessage
 Set-RegistryString -Path "HKCU:\\Software\\Microsoft\\Edge\\Defaults" -Name "is_startup_page_recommended" -Value "0"
 Set-RegistryString -Path "HKCU:\\Software\\Microsoft\\Edge\\Defaults" -Name "is_dse_recommended" -Value "0"
 Write-Success "Edge basic configuration completed"
 
-$browserCurrentStep++; $statusMessage = "Setting Registry: Edge Security..."; Write-Progress -Activity "Browser Registry Configuration" -Status $statusMessage -PercentComplete (($browserCurrentStep / $browserTotalSteps) * 100) -Id $progressIdBrowser
+$browserCurrentStep++; $statusMessage = "Setting Registry: Edge Security..."; Write-Progress -Activity "Browser Registry Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($browserCurrentStep / $browserTotalSteps) * 100))) -Id $progressIdBrowser
 Write-SectionHeader "EDGE SECURITY & PRIVACY SETTINGS" "🔒"
 I $statusMessage
 
@@ -53,7 +53,7 @@ Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge" -Name "Bing
 Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge" -Name "EdgeShoppingAssistantEnabled" -Value 0
 Write-Success "Edge security & privacy settings configured"
 
-$browserCurrentStep++; $statusMessage = "Setting Registry: Edge Fake MDM..."; Write-Progress -Activity "Browser Registry Configuration" -Status $statusMessage -PercentComplete (($browserCurrentStep / $browserTotalSteps) * 100) -Id $progressIdBrowser
+$browserCurrentStep++; $statusMessage = "Setting Registry: Edge Fake MDM..."; Write-Progress -Activity "Browser Registry Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($browserCurrentStep / $browserTotalSteps) * 100))) -Id $progressIdBrowser
 Write-SectionHeader "EDGE MDM SIMULATION" "🏢"
 I $statusMessage
 Write-StatusLine "⚙️" "Setting up fake MDM enrollment for enterprise policies..." "Cyan"
@@ -67,7 +67,7 @@ Set-RegistryString -Path "HKLM:\\SOFTWARE\\Microsoft\\Provisioning\\OMADM\\Accou
 Set-RegistryString -Path "HKLM:\\SOFTWARE\\Microsoft\\Provisioning\\OMADM\\Accounts\\FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF" -Name "ProtoVer" -Value "1.2"
 Write-Success "Edge MDM simulation configured"
 
-$browserCurrentStep++; $statusMessage = "Setting Registry: Edge Search Engine..."; Write-Progress -Activity "Browser Registry Configuration" -Status $statusMessage -PercentComplete (($browserCurrentStep / $browserTotalSteps) * 100) -Id $progressIdBrowser
+$browserCurrentStep++; $statusMessage = "Setting Registry: Edge Search Engine..."; Write-Progress -Activity "Browser Registry Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($browserCurrentStep / $browserTotalSteps) * 100))) -Id $progressIdBrowser
 Write-SectionHeader "SEARCH ENGINE & IMPORT SETTINGS" "🔍"
 I $statusMessage
 Write-StatusLine "🔍" "Configuring Google as default search engine..." "Cyan"
@@ -93,7 +93,7 @@ Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\\Recommended
 Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\\Recommended" -Name "ShowHomeButton" -Value 1
 Write-Success "Search engine & import settings configured"
 
-$browserCurrentStep++; $statusMessage = "Browser configuration complete."; Write-Progress -Activity "Browser Registry Configuration" -Status $statusMessage -PercentComplete (($browserCurrentStep / $browserTotalSteps) * 100) -Id $progressIdBrowser
+$browserCurrentStep++; $statusMessage = "Browser configuration complete."; Write-Progress -Activity "Browser Registry Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($browserCurrentStep / $browserTotalSteps) * 100))) -Id $progressIdBrowser
 
 Write-Progress -Activity "Browser Registry Configuration" -Completed -Id $progressIdBrowser
 Write-Host ""

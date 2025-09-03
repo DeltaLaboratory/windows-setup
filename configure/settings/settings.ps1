@@ -10,7 +10,7 @@ Write-StatusLine "🔧" "Configuring system-level settings..." "Yellow"
 Write-StatusLine "📊" "Total Configuration Groups: $settingsTotalSteps" "DarkGray"
 Write-Host ""
 
-$settingsCurrentStep++; $statusMessage = "Setting Host Information..."; Write-Progress -Activity "System Settings Configuration" -Status $statusMessage -PercentComplete (($settingsCurrentStep / $settingsTotalSteps) * 100) -Id $progressIdSettings
+$settingsCurrentStep++; $statusMessage = "Setting Host Information..."; Write-Progress -Activity "System Settings Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($settingsCurrentStep / $settingsTotalSteps) * 100))) -Id $progressIdSettings
 Write-SectionHeader "HOSTS FILE CONFIGURATION" "🌐"
 I "Setting Host Information..."
 Write-StatusLine "🚫" "Adding ad-blocking entries to hosts file..." "Cyan"
@@ -34,7 +34,7 @@ try {
     throw $_
 }
 
-$settingsCurrentStep++; $statusMessage = "Configuring Sudo..."; Write-Progress -Activity "System Settings Configuration" -Status $statusMessage -PercentComplete (($settingsCurrentStep / $settingsTotalSteps) * 100) -Id $progressIdSettings
+$settingsCurrentStep++; $statusMessage = "Configuring Sudo..."; Write-Progress -Activity "System Settings Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($settingsCurrentStep / $settingsTotalSteps) * 100))) -Id $progressIdSettings
 Write-SectionHeader "SUDO CONFIGURATION" "🔐"
 I "Configuring Sudo..."
 Write-StatusLine "⚡" "Enabling sudo for normal users..." "Cyan"
@@ -46,7 +46,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Success "Sudo configured successfully!"
 }
 
-$settingsCurrentStep++; $statusMessage = "Configuring Network for Winget..."; Write-Progress -Activity "System Settings Configuration" -Status $statusMessage -PercentComplete (($settingsCurrentStep / $settingsTotalSteps) * 100) -Id $progressIdSettings
+$settingsCurrentStep++; $statusMessage = "Configuring Network for Winget..."; Write-Progress -Activity "System Settings Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($settingsCurrentStep / $settingsTotalSteps) * 100))) -Id $progressIdSettings
 Write-SectionHeader "NETWORK OPTIMIZATION" "🌐"
 I "Configuring Network for Winget..."
 Write-StatusLine "📶" "Optimizing TCP auto-tuning for better performance..." "Cyan"

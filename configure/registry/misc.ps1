@@ -10,7 +10,7 @@ Write-StatusLine "⚙️" "Applying miscellaneous system configurations..." "Yel
 Write-StatusLine "📊" "Total Configuration Groups: $miscTotalSteps" "DarkGray"
 Write-Host ""
 
-$miscCurrentStep++; $statusMessage = "Setting Registry: Xbox Related Config..."; Write-Progress -Activity "Miscellaneous Registry Configuration" -Status $statusMessage -PercentComplete (($miscCurrentStep / $miscTotalSteps) * 100) -Id $progressIdMisc
+$miscCurrentStep++; $statusMessage = "Setting Registry: Xbox Related Config..."; Write-Progress -Activity "Miscellaneous Registry Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($miscCurrentStep / $miscTotalSteps) * 100))) -Id $progressIdMisc
 Write-SectionHeader "XBOX SERVICES CONFIGURATION" "🎮"
 I $statusMessage
 Write-StatusLine "🚫" "Disabling Xbox services..." "Cyan"
@@ -20,7 +20,7 @@ Set-RegistryDword -Path "HKLM:\SYSTEM\CurrentControlSet\Services\XblGameSave" -N
 Set-RegistryDword -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\XboxNetApiSvc" -Name "Start" -Value 4
 Write-Success "Xbox services disabled successfully"
 
-$miscCurrentStep++; $statusMessage = "Setting Registry: Privacy & Security Policies..."; Write-Progress -Activity "Miscellaneous Registry Configuration" -Status $statusMessage -PercentComplete (($miscCurrentStep / $miscTotalSteps) * 100) -Id $progressIdMisc
+$miscCurrentStep++; $statusMessage = "Setting Registry: Privacy & Security Policies..."; Write-Progress -Activity "Miscellaneous Registry Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($miscCurrentStep / $miscTotalSteps) * 100))) -Id $progressIdMisc
 Write-SectionHeader "PRIVACY & SECURITY POLICIES" "🔒"
 I $statusMessage
 
@@ -89,7 +89,7 @@ Set-RegistryDword -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explore
 
 Write-Success "Privacy & security policies configured"
 
-$miscCurrentStep++; $statusMessage = "Setting Registry: PowerShell Transcript Output Directory..."; Write-Progress -Activity "Miscellaneous Registry Configuration" -Status $statusMessage -PercentComplete (($miscCurrentStep / $miscTotalSteps) * 100) -Id $progressIdMisc
+$miscCurrentStep++; $statusMessage = "Setting Registry: PowerShell Transcript Output Directory..."; Write-Progress -Activity "Miscellaneous Registry Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($miscCurrentStep / $miscTotalSteps) * 100))) -Id $progressIdMisc
 Write-SectionHeader "POWERSHELL TRANSCRIPT CONFIGURATION" "📝"
 I $statusMessage
 Write-StatusLine "📁" "Setting PowerShell transcript output directory..." "Cyan"
