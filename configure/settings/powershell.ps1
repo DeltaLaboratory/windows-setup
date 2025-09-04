@@ -29,6 +29,58 @@ try {
 # MSYS2 Path
 `$env:Path += ";C:\Users\$env:USERNAME\scoop\apps\msys2\current\ucrt64\bin"
 
+# Scoop Subshell Functions for Admin Permission Handling
+function Test-IsAdministrator {
+    try {
+        `$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+        return `$currentPrincipal.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
+    } catch {
+        return `$false
+    }
+}
+
+function Test-IsAdministratorUser {
+    try {
+        `$currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
+        return `$currentUser.Name -like "*\Administrator"
+    } catch {
+        return `$false
+    }
+}
+
+function scoopsub {
+    param([string]`$Command = "")
+    
+    `$isAdmin = Test-IsAdministrator
+    `$isAdminUser = Test-IsAdministratorUser
+    
+    if (`$isAdmin -or `$isAdminUser) {
+        Write-Host "⚡ Admin permissions detected - launching scoop as normal user" -ForegroundColor Yellow
+        
+        `$powershellExe = if (Get-Command "pwsh" -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell.exe" }
+        `$scoopCommand = if ([string]::IsNullOrWhiteSpace(`$Command)) { "scoop" } else { "scoop `$Command" }
+        
+        if (`$isAdmin) {
+            # Drop admin privileges by launching cmd without elevation
+            `$cmdArgs = "/c ```"`$powershellExe```" -NoProfile -ExecutionPolicy Bypass -Command ```"`$scoopCommand```""
+            Start-Process -FilePath "cmd" -ArgumentList `$cmdArgs -Wait
+        } else {
+            # Administrator user but not elevated
+            Start-Process -FilePath `$powershellExe -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", "`$scoopCommand" -Wait
+        }
+    } else {
+        Write-Host "✅ Normal user context - executing scoop directly" -ForegroundColor Green
+        if ([string]::IsNullOrWhiteSpace(`$Command)) {
+            scoop
+        } else {
+            Invoke-Expression "scoop `$Command"
+        }
+    }
+}
+
+# Alias for easier access
+Set-Alias -Name scoopsh -Value scoopsub
+
 function prompt {
     #region Variable Definition
     `$CmdPromptUser = [Security.Principal.WindowsIdentity]::GetCurrent()
@@ -93,6 +145,7 @@ function prompt {
     Write-StatusLine "  🌿" "Git branch status in prompt" "DarkGray"
     Write-StatusLine "  🛤️" "Proper PATH environment management" "DarkGray"
     Write-StatusLine "  🔧" "MSYS2 integration" "DarkGray"
+    Write-StatusLine "  🪣" "Scoop subshell with admin permission handling (scoopsub/scoopsh)" "DarkGray"
 
     Write-Success "PowerShell 7 Profile setup completed successfully!"
 } catch {

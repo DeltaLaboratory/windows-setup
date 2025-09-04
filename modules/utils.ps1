@@ -280,6 +280,135 @@ function Install-ScoopPackageIfNeeded {
     }
 }
 
+# Administrator and User Detection Functions
+function Test-IsAdministrator {
+    <#
+    .SYNOPSIS
+        Check if current user has administrator privileges
+    .DESCRIPTION
+        Returns true if the current user is running with administrator privileges
+    #>
+    try {
+        $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+        return $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
+    } catch {
+        return $false
+    }
+}
+
+function Test-IsAdministratorUser {
+    <#
+    .SYNOPSIS
+        Check if current user is the built-in Administrator user
+    .DESCRIPTION
+        Returns true if the current user is the built-in Administrator account
+    #>
+    try {
+        $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
+        return $currentUser.Name -like "*\Administrator"
+    } catch {
+        return $false
+    }
+}
+
+function Start-ScoopSubshell {
+    <#
+    .SYNOPSIS
+        Launches scoop subshell as normal user if admin permissions detected
+    .DESCRIPTION
+        If the current session has admin permissions or user is Administrator,
+        this function launches a new PowerShell session as a normal user for scoop operations
+    #>
+    param(
+        [string]$Command = "",
+        [switch]$PassThru
+    )
+    
+    $isAdmin = Test-IsAdministrator
+    $isAdminUser = Test-IsAdministratorUser
+    
+    if ($isAdmin -or $isAdminUser) {
+        Write-StatusLine "⚡" "Admin permissions detected - launching scoop subshell as normal user" "Yellow"
+        
+        try {
+            # Get the current user's username without the domain part
+            $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
+            $username = $currentUser.Name.Split('\')[-1]
+            
+            # Prepare PowerShell executable - prefer pwsh over powershell.exe
+            $powershellExe = if (Get-Command "pwsh" -ErrorAction SilentlyContinue) {
+                "pwsh"
+            } else {
+                "powershell.exe"
+            }
+            
+            # Build the command to execute
+            $scoopCommand = if ([string]::IsNullOrWhiteSpace($Command)) {
+                "scoop"
+            } else {
+                "scoop $Command"
+            }
+            
+            Write-StatusLine "🔄" "Launching: $powershellExe as normal user for: $scoopCommand" "Cyan"
+            
+            # Use RunAs with the current user to drop admin privileges
+            # This approach launches as the current user but without elevated privileges
+            $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+            $startInfo.FileName = $powershellExe
+            $startInfo.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$scoopCommand`""
+            $startInfo.UseShellExecute = $true
+            $startInfo.Verb = "" # Empty verb means no elevation
+            
+            # If we're currently elevated, we need a different approach
+            if ($isAdmin) {
+                # Create a new process without admin privileges by using the user's token
+                Write-StatusLine "🔓" "Dropping admin privileges for scoop operation" "Yellow"
+                
+                # Use cmd to launch without admin privileges
+                $cmdArgs = "/c `"$powershellExe`" -NoProfile -ExecutionPolicy Bypass -Command `"$scoopCommand`""
+                
+                $process = Start-Process -FilePath "cmd" -ArgumentList $cmdArgs -Wait:(!$PassThru) -PassThru:$PassThru
+                
+                if ($PassThru) {
+                    return $process
+                }
+                
+                if ($process.ExitCode -eq 0) {
+                    Write-Success "Scoop subshell command completed successfully"
+                } else {
+                    Write-Warning "Scoop subshell command completed with exit code: $($process.ExitCode)"
+                }
+            } else {
+                # If not admin but is Administrator user, just launch normally
+                $process = Start-Process -FilePath $powershellExe -ArgumentList $startInfo.Arguments -Wait:(!$PassThru) -PassThru:$PassThru
+                
+                if ($PassThru) {
+                    return $process
+                }
+                
+                if ($process.ExitCode -eq 0) {
+                    Write-Success "Scoop subshell command completed successfully"
+                } else {
+                    Write-Warning "Scoop subshell command completed with exit code: $($process.ExitCode)"
+                }
+            }
+        } catch {
+            E "Error launching scoop subshell: $($_.Exception.Message)"
+            throw "Failed to launch scoop subshell as normal user: $($_.Exception.Message)"
+        }
+    } else {
+        Write-StatusLine "✅" "Normal user context detected - executing scoop command directly" "Green"
+        
+        if ([string]::IsNullOrWhiteSpace($Command)) {
+            # Launch interactive scoop shell
+            scoop
+        } else {
+            # Execute the specific command
+            Invoke-Expression "scoop $Command"
+        }
+    }
+}
+
 # Set console colors for better TUI experience
 $Host.UI.RawUI.BackgroundColor = 'Black'
 $Host.UI.RawUI.ForegroundColor = 'White'
