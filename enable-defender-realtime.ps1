@@ -114,6 +114,16 @@ function Set-RegistryDword {
     Set-RegistryValue -Path $Path -Name $Name -Value $Value -Type DWord -ContinueOnError:$ContinueOnError
 }
 
+function Set-RegistryString {
+    param(
+        [string]$Path,
+        [string]$Name,
+        [string]$Value,
+        [switch]$ContinueOnError
+    )
+    Set-RegistryValue -Path $Path -Name $Name -Value $Value -Type String -ContinueOnError:$ContinueOnError
+}
+
 function Remove-RegistryValue {
     param(
         [string]$Path,
@@ -160,12 +170,13 @@ try {
     
     # Information
     Write-Host ""
-    Write-StatusLine "🔒" "This script will enable Windows Defender real-time protection" "Green"
-    Write-StatusLine "🛡️" "This action improves your system's security against malware" "Green"
-    Write-StatusLine "⚡" "Real-time scanning will monitor files and processes continuously" "Cyan"
+    Write-StatusLine "🔒" "This script will enable comprehensive Windows Defender protection" "Green"
+    Write-StatusLine "🛡️" "This restores full security configuration including real-time protection" "Green"
+    Write-StatusLine "⚡" "All security features: scanning, cloud protection, behavior monitoring" "Cyan"
+    Write-StatusLine "🔧" "Aligned with windows-setup hardening configuration" "Cyan"
     Write-Host ""
     
-    Write-BoxedHeader "🔧 ENABLING REAL-TIME PROTECTION" "Green" 50
+    Write-BoxedHeader "🔧 ENABLING COMPREHENSIVE PROTECTION" "Green" 50
     
     # Check administrator privileges
     Write-ProgressStep "Checking administrator privileges..." "IN_PROGRESS"
@@ -197,25 +208,71 @@ try {
         Write-ProgressStep "PowerShell cmdlet method failed: $($_.Exception.Message)" "ERROR"
     }
     
-    # Method 2: Registry Method (Fallback) - Remove disable flags
-    Write-ProgressStep "Attempting to enable via registry cleanup..." "IN_PROGRESS"
+    # Method 2: Registry Method (Comprehensive security configuration)
+    Write-ProgressStep "Applying comprehensive security configuration..." "IN_PROGRESS"
     try {
-        $registrySuccess = $true
+        $registrySuccess = 0
+        $totalRegistryOperations = 0
         
-        # Remove or set registry values to enable Windows Defender real-time protection
-        # Set to 0 (enabled) or remove the DisableRealtimeMonitoring values
-        if (-not (Set-RegistryDword -Path "HKLM:\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableRealtimeMonitoring" -Value 0 -ContinueOnError)) {
-            # Try to remove the value entirely as an alternative
-            Remove-RegistryValue -Path "HKLM:\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableRealtimeMonitoring" -ContinueOnError
-        }
+        # Core Windows Defender Settings (aligned with hardening script)
+        Write-ProgressStep "Configuring core Windows Defender settings..." "IN_PROGRESS"
+        $totalRegistryOperations++
+        if (Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "DisableAntiSpyware" -Value 0 -ContinueOnError) { $registrySuccess++ }
+        $totalRegistryOperations++
+        if (Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "PUAProtection" -Value 1 -ContinueOnError) { $registrySuccess++ }
         
-        if (-not (Set-RegistryDword -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableRealtimeMonitoring" -Value 0 -ContinueOnError)) {
-            # Try to remove the value entirely as an alternative
-            Remove-RegistryValue -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableRealtimeMonitoring" -ContinueOnError
-        }
+        # Clear exclusions (aligned with hardening script)
+        Write-ProgressStep "Clearing security exclusions..." "IN_PROGRESS"
+        $totalRegistryOperations++
+        if (Set-RegistryString -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Exclusions" -Name "Exclusions_Extensions" -Value "" -ContinueOnError) { $registrySuccess++ }
+        $totalRegistryOperations++
+        if (Set-RegistryString -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Policy Manager" -Name "ExcludedExtensions" -Value "" -ContinueOnError) { $registrySuccess++ }
+        $totalRegistryOperations++
+        if (Set-RegistryString -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Exclusions" -Name "Exclusions_Paths" -Value "" -ContinueOnError) { $registrySuccess++ }
+        $totalRegistryOperations++
+        if (Set-RegistryString -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Policy Manager" -Name "ExcludedPaths" -Value "" -ContinueOnError) { $registrySuccess++ }
+        $totalRegistryOperations++
+        if (Set-RegistryString -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Exclusions" -Name "Exclusions_Processes" -Value "" -ContinueOnError) { $registrySuccess++ }
+        $totalRegistryOperations++
+        if (Set-RegistryString -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Policy Manager" -Name "ExcludedProcesses" -Value "" -ContinueOnError) { $registrySuccess++ }
         
-        Write-ProgressStep "Registry method completed" "SUCCESS"
-        $methods += "Registry Keys"
+        # Real-Time Protection Settings (comprehensive)
+        Write-ProgressStep "Configuring real-time protection settings..." "IN_PROGRESS"
+        $totalRegistryOperations++
+        if (Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableIOAVProtection" -Value 0 -ContinueOnError) { $registrySuccess++ }
+        $totalRegistryOperations++
+        if (Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableRealtimeMonitoring" -Value 0 -ContinueOnError) { $registrySuccess++ }
+        $totalRegistryOperations++
+        if (Set-RegistryDword -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableBehaviorMonitoring" -Value 0 -ContinueOnError) { $registrySuccess++ }
+        $totalRegistryOperations++
+        if (Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableScriptScanning" -Value 0 -ContinueOnError) { $registrySuccess++ }
+        $totalRegistryOperations++
+        if (Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Scan" -Name "DisableRemovableDriveScanning" -Value 0 -ContinueOnError) { $registrySuccess++ }
+        
+        # Cloud Protection Settings
+        Write-ProgressStep "Configuring cloud protection settings..." "IN_PROGRESS"
+        $totalRegistryOperations++
+        if (Set-RegistryDword -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet" -Name "SpynetReporting" -Value 2 -ContinueOnError) { $registrySuccess++ }
+        $totalRegistryOperations++
+        if (Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Spynet" -Name "DisableBlockAtFirstSeen" -Value 0 -ContinueOnError) { $registrySuccess++ }
+        $totalRegistryOperations++
+        if (Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Spynet" -Name "SubmitSamplesConsent" -Value 0 -ContinueOnError) { $registrySuccess++ }
+        $totalRegistryOperations++
+        if (Set-RegistryDword -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\MpEngine" -Name "EnableFileHashComputation" -Value 1 -ContinueOnError) { $registrySuccess++ }
+        $totalRegistryOperations++
+        if (Set-RegistryDword -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\MpEngine" -Name "MpCloudBlockLevel" -Value 2 -ContinueOnError) { $registrySuccess++ }
+        
+        # Enhanced Protection Settings
+        Write-ProgressStep "Configuring enhanced protection settings..." "IN_PROGRESS"
+        $totalRegistryOperations++
+        if (Set-RegistryDword -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" -Name "MP_FORCE_USE_SANDBOX" -Value 1 -ContinueOnError) { $registrySuccess++ }
+        
+        # Also try to clean up any disable flags from non-policy locations
+        Remove-RegistryValue -Path "HKLM:\SOFTWARE\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableRealtimeMonitoring" -ContinueOnError
+        
+        $successRate = [Math]::Round(($registrySuccess / $totalRegistryOperations) * 100, 1)
+        Write-ProgressStep "Registry configuration completed: $registrySuccess/$totalRegistryOperations operations successful ($successRate%)" "SUCCESS"
+        $methods += "Comprehensive Registry Configuration"
         $successCount++
     } catch {
         Write-ProgressStep "Registry method failed: $($_.Exception.Message)" "ERROR"
@@ -243,8 +300,8 @@ try {
     # Display results
     Write-Host ""
     if ($successCount -gt 0) {
-        Write-BoxedHeader "✅ REAL-TIME PROTECTION ENABLED" "Green" 50
-        Write-StatusLine "🛡️" "Windows Defender real-time protection has been enabled" "Green"
+        Write-BoxedHeader "✅ COMPREHENSIVE PROTECTION ENABLED" "Green" 50
+        Write-StatusLine "🛡️" "Windows Defender comprehensive protection has been enabled" "Green"
         Write-StatusLine "📊" "Methods used: $($methods -join ', ')" "Cyan"
         Write-StatusLine "🔄" "Changes take effect immediately" "Green"
         
@@ -266,7 +323,7 @@ try {
         }
     } else {
         Write-BoxedHeader "❌ OPERATION FAILED" "Red" 50
-        Write-StatusLine "❌" "Failed to enable Windows Defender real-time protection" "Red"
+        Write-StatusLine "❌" "Failed to enable Windows Defender comprehensive protection" "Red"
         Write-StatusLine "💡" "Try running as Administrator or check system policies" "Yellow"
     }
     

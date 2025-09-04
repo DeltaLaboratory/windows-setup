@@ -133,7 +133,9 @@ try {
     Write-Host ""
     Write-StatusLine "⚠️" "WARNING: This script will disable Windows Defender real-time protection" "Yellow"
     Write-StatusLine "🔓" "This action reduces your system's security against malware" "Yellow"
+    Write-StatusLine "🛡️" "Other security features (cloud protection, ASR rules) remain active" "Cyan"
     Write-StatusLine "💡" "Only proceed if you understand the security implications" "Yellow"
+    Write-StatusLine "🔧" "Use 'enable-defender-realtime.ps1' to restore full protection" "Cyan"
     Write-Host ""
     
     # Confirm action
@@ -215,8 +217,9 @@ try {
     }
     
     Write-Host ""
-    Write-StatusLine "⚠️" "Security Reminder: Your system is now more vulnerable to malware" "Yellow"
-    Write-StatusLine "🔧" "To re-enable protection, run 'enable-defender-realtime.ps1'" "Cyan"
+    Write-StatusLine "⚠️" "Security Reminder: Real-time protection is now disabled" "Yellow"
+    Write-StatusLine "🛡️" "Other security features (cloud protection, ASR rules) remain active" "Cyan"
+    Write-StatusLine "🔧" "To restore full protection, run 'enable-defender-realtime.ps1'" "Cyan"
     
 } catch {
     Write-Host ""
