@@ -9,6 +9,7 @@ $Global:REPO_NAME = "windows-setup"
 
 # Module URLs
 $Global:UTILS_URL = "$Global:REPO_BASE_URL/modules/utils.ps1"
+$Global:GUI_PROGRESS_URL = "$Global:REPO_BASE_URL/modules/gui-progress.ps1"
 
 # Configuration Script URLs
 $Global:REGISTRY_SYSTEM_URL = "$Global:REPO_BASE_URL/configure/registry/system.ps1"

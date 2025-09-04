@@ -6,6 +6,7 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 param(
     [switch]$ForceDownload,
     [switch]$OfflineMode,
+    [switch]$UseGUI,
     [string]$CacheDir,
     [string]$Version = "main"
 )
@@ -23,6 +24,7 @@ $REPO_BASE_URL = "https://raw.githubusercontent.com/DeltaLaboratory/windows-setu
 $MAIN_SCRIPT_URL = "$REPO_BASE_URL/main.ps1"
 $CONFIG_SCRIPT_URL = "$REPO_BASE_URL/modules/config.ps1"
 $UTILS_SCRIPT_URL = "$REPO_BASE_URL/modules/utils.ps1"
+$GUI_PROGRESS_SCRIPT_URL = "$REPO_BASE_URL/modules/gui-progress.ps1"
 
 # TUI Helper Functions
 function Write-BoxedHeader {
@@ -161,6 +163,10 @@ try {
     Write-StatusLine "📁" "Cache Directory: $CacheDir" "DarkGray"
     Write-StatusLine "🌐" "Repository: $REPO_BASE_URL" "DarkGray"
     Write-StatusLine "📦" "Version: $Version" "DarkGray"
+    
+    if ($UseGUI) {
+        Write-StatusLine "🖥️" "GUI Mode: ON" "Magenta"
+    }
 
     if ($ForceDownload) {
         Write-StatusLine "🔄" "Force Download Mode: ON" "Yellow"
@@ -200,6 +206,38 @@ try {
         $utilsSuccess = $false
         Add-LoaderError "Utilities loading failed: $($_.Exception.Message)"
         Write-ProgressStep "Utilities module failed" "ERROR"
+    }
+
+    # Load GUI progress module if GUI mode is requested
+    $guiProgressSuccess = $true
+    if ($UseGUI) {
+        Write-ProgressStep "Loading GUI progress module..." "IN_PROGRESS"
+        try {
+            # Check if GUI is available on this system
+            $guiAvailable = $true
+            try {
+                Add-Type -AssemblyName System.Windows.Forms -ErrorAction Stop
+                Add-Type -AssemblyName System.Drawing -ErrorAction Stop
+            } catch {
+                $guiAvailable = $false
+            }
+            
+            if (-not $guiAvailable) {
+                throw "Windows Forms components not available on this system"
+            }
+            
+            $GuiProgressContent = Get-CachedScript -Url $GUI_PROGRESS_SCRIPT_URL -FileName "gui-progress.ps1"
+            if (-not (Test-ScriptIntegrity $GuiProgressContent)) {
+                throw "GUI progress script integrity check failed"
+            }
+            Write-ProgressStep "GUI progress module validated" "SUCCESS"
+        } catch {
+            $guiProgressSuccess = $false
+            Add-LoaderWarning "GUI progress loading failed: $($_.Exception.Message)"
+            Add-LoaderWarning "Falling back to console-only mode"
+            Write-ProgressStep "GUI progress module failed, using console" "WARNING"
+            $UseGUI = $false
+        }
     }
 
     # Load main script
@@ -249,6 +287,20 @@ try {
         } catch {
             Add-LoaderWarning "Utilities execution had issues: $($_.Exception.Message)"
             Write-ProgressStep "Utilities had warnings" "WARNING"
+        }
+
+        # Execute GUI progress module if loaded
+        if ($UseGUI -and $guiProgressSuccess) {
+            try {
+                Write-ProgressStep "Executing GUI progress module..." "IN_PROGRESS"
+                Invoke-Expression $GuiProgressContent
+                Enable-ProgressGUI
+                Write-ProgressStep "GUI progress module executed" "SUCCESS"
+            } catch {
+                Add-LoaderWarning "GUI progress module execution had issues: $($_.Exception.Message)"
+                Write-ProgressStep "GUI progress module had warnings" "WARNING"
+                $UseGUI = $false
+            }
         }
 
         try {
