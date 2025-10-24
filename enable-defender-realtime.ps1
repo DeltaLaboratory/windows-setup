@@ -16,9 +16,9 @@ function Write-BoxedHeader {
     $rightPad = " " * [Math]::Ceiling($padding)
 
     Write-Host ""
-    Write-Host ("┌" + "─" * ($Width - 2) + "┐") -ForegroundColor $Color
-    Write-Host ("│" + $leftPad + $Title + $rightPad + "│") -ForegroundColor $Color
-    Write-Host ("└" + "─" * ($Width - 2) + "┘") -ForegroundColor $Color
+    Write-Host ("+" + "-" * ($Width - 2) + "+") -ForegroundColor $Color
+    Write-Host ("|" + $leftPad + $Title + $rightPad + "|") -ForegroundColor $Color
+    Write-Host ("+" + "-" * ($Width - 2) + "+") -ForegroundColor $Color
     Write-Host ""
 }
 
@@ -39,11 +39,11 @@ function Write-ProgressStep {
     )
 
     $icon = switch ($Status) {
-        "IN_PROGRESS" { "⚡" }
-        "SUCCESS" { "✅" }
-        "ERROR" { "❌" }
-        "WARNING" { "⚠️" }
-        default { "•" }
+        "IN_PROGRESS" { "[POWER]" }
+        "SUCCESS" { "[OK]" }
+        "ERROR" { "[ERROR]" }
+        "WARNING" { "[WARN]" }
+        default { "-" }
     }
 
     $color = switch ($Status) {
@@ -166,24 +166,24 @@ try {
     Clear-Host
     
     # Main Header
-    Write-BoxedHeader "🛡️ ENABLE WINDOWS DEFENDER REAL-TIME PROTECTION" "Green" 70
+    Write-BoxedHeader "[SHIELD] ENABLE WINDOWS DEFENDER REAL-TIME PROTECTION" "Green" 70
     
     # Information
     Write-Host ""
-    Write-StatusLine "🔒" "This script will enable comprehensive Windows Defender protection" "Green"
-    Write-StatusLine "🛡️" "This restores full security configuration including real-time protection" "Green"
-    Write-StatusLine "⚡" "All security features: scanning, cloud protection, behavior monitoring" "Cyan"
-    Write-StatusLine "🔧" "Aligned with windows-setup hardening configuration" "Cyan"
+    Write-StatusLine "[LOCKED]" "This script will enable comprehensive Windows Defender protection" "Green"
+    Write-StatusLine "[SHIELD]" "This restores full security configuration including real-time protection" "Green"
+    Write-StatusLine "[POWER]" "All security features: scanning, cloud protection, behavior monitoring" "Cyan"
+    Write-StatusLine "[FIX]" "Aligned with windows-setup hardening configuration" "Cyan"
     Write-Host ""
     
-    Write-BoxedHeader "🔧 ENABLING COMPREHENSIVE PROTECTION" "Green" 50
+    Write-BoxedHeader "[FIX] ENABLING COMPREHENSIVE PROTECTION" "Green" 50
     
     # Check administrator privileges
     Write-ProgressStep "Checking administrator privileges..." "IN_PROGRESS"
     if (-not (Test-IsAdministrator)) {
         Write-ProgressStep "Administrator privileges required" "ERROR"
-        Write-StatusLine "❌" "This script must be run as Administrator" "Red"
-        Write-StatusLine "💡" "Right-click and select 'Run as Administrator'" "Cyan"
+        Write-StatusLine "[ERROR]" "This script must be run as Administrator" "Red"
+        Write-StatusLine "[HINT]" "Right-click and select 'Run as Administrator'" "Cyan"
         exit 1
     }
     Write-ProgressStep "Administrator privileges confirmed" "SUCCESS"
@@ -300,10 +300,10 @@ try {
     # Display results
     Write-Host ""
     if ($successCount -gt 0) {
-        Write-BoxedHeader "✅ COMPREHENSIVE PROTECTION ENABLED" "Green" 50
-        Write-StatusLine "🛡️" "Windows Defender comprehensive protection has been enabled" "Green"
-        Write-StatusLine "📊" "Methods used: $($methods -join ', ')" "Cyan"
-        Write-StatusLine "🔄" "Changes take effect immediately" "Green"
+        Write-BoxedHeader "[OK] COMPREHENSIVE PROTECTION ENABLED" "Green" 50
+        Write-StatusLine "[SHIELD]" "Windows Defender comprehensive protection has been enabled" "Green"
+        Write-StatusLine "[STATS]" "Methods used: $($methods -join ', ')" "Cyan"
+        Write-StatusLine "[REFRESH]" "Changes take effect immediately" "Green"
         
         # Additional verification
         Write-Host ""
@@ -322,23 +322,23 @@ try {
             Write-ProgressStep "Status verification failed, but changes were applied" "WARNING"
         }
     } else {
-        Write-BoxedHeader "❌ OPERATION FAILED" "Red" 50
-        Write-StatusLine "❌" "Failed to enable Windows Defender comprehensive protection" "Red"
-        Write-StatusLine "💡" "Try running as Administrator or check system policies" "Yellow"
+        Write-BoxedHeader "[ERROR] OPERATION FAILED" "Red" 50
+        Write-StatusLine "[ERROR]" "Failed to enable Windows Defender comprehensive protection" "Red"
+        Write-StatusLine "[HINT]" "Try running as Administrator or check system policies" "Yellow"
     }
     
     Write-Host ""
-    Write-StatusLine "🔒" "Security Status: Your system protection has been enhanced" "Green"
-    Write-StatusLine "🔧" "To disable protection, run 'disable-defender-realtime.ps1'" "Cyan"
+    Write-StatusLine "[LOCKED]" "Security Status: Your system protection has been enhanced" "Green"
+    Write-StatusLine "[FIX]" "To disable protection, run 'disable-defender-realtime.ps1'" "Cyan"
     
 } catch {
     Write-Host ""
-    Write-BoxedHeader "❌ UNEXPECTED ERROR" "Red" 50
-    Write-StatusLine "❌" "An unexpected error occurred: $($_.Exception.Message)" "Red"
-    Write-StatusLine "💡" "Please check the error details and try again" "Yellow"
+    Write-BoxedHeader "[ERROR] UNEXPECTED ERROR" "Red" 50
+    Write-StatusLine "[ERROR]" "An unexpected error occurred: $($_.Exception.Message)" "Red"
+    Write-StatusLine "[HINT]" "Please check the error details and try again" "Yellow"
     exit 1
 }
 
 Write-Host ""
-Write-StatusLine "✨" "Script execution completed" "Green"
+Write-StatusLine "[DONE]" "Script execution completed" "Green"
 Read-Host "Press Enter to continue"

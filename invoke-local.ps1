@@ -21,9 +21,9 @@ function Write-BoxedHeader {
     $rightPad = " " * [Math]::Ceiling($padding)
 
     Write-Host ""
-    Write-Host ("┌" + "─" * ($Width - 2) + "┐") -ForegroundColor $Color
-    Write-Host ("│" + $leftPad + $Title + $rightPad + "│") -ForegroundColor $Color
-    Write-Host ("└" + "─" * ($Width - 2) + "┘") -ForegroundColor $Color
+    Write-Host ("+" + "-" * ($Width - 2) + "+") -ForegroundColor $Color
+    Write-Host ("|" + $leftPad + $Title + $rightPad + "|") -ForegroundColor $Color
+    Write-Host ("+" + "-" * ($Width - 2) + "+") -ForegroundColor $Color
     Write-Host ""
 }
 
@@ -45,15 +45,15 @@ $RequiredFiles = @(
 )
 
 Clear-Host
-Write-BoxedHeader "🏠 LOCAL DEVELOPMENT LOADER" "Green" 60
-Write-StatusLine "📁" "Workspace: $WorkspacePath" "DarkGray"
+Write-BoxedHeader "[HOME] LOCAL DEVELOPMENT LOADER" "Green" 60
+Write-StatusLine "[DIR]" "Workspace: $WorkspacePath" "DarkGray"
 
 if ($Verbose) {
-    Write-StatusLine "🔍" "Verbose mode enabled" "Yellow"
+    Write-StatusLine "[SEARCH]" "Verbose mode enabled" "Yellow"
 }
 
 Write-Host ""
-Write-StatusLine "🔍" "Validating workspace structure..." "Cyan"
+Write-StatusLine "[SEARCH]" "Validating workspace structure..." "Cyan"
 
 # Check if all required files exist
 $MissingFiles = @()
@@ -63,28 +63,28 @@ foreach ($File in $RequiredFiles) {
     $FullPath = Join-Path $WorkspacePath $File
     if (-not (Test-Path $FullPath)) {
         $MissingFiles += $File
-        Write-StatusLine "❌" "Missing: $File" "Red"
+        Write-StatusLine "[ERROR]" "Missing: $File" "Red"
     } else {
         $FoundFiles += $File
-        Write-StatusLine "✅" "Found: $File" "Green"
+        Write-StatusLine "[OK]" "Found: $File" "Green"
     }
 }
 
 if ($MissingFiles.Count -gt 0) {
     Write-Host ""
-    Write-BoxedHeader "❌ WORKSPACE VALIDATION FAILED" "Red" 50
-    Write-StatusLine "📋" "Required files summary:" "Yellow"
-    Write-StatusLine "  ✅" "Found: $($FoundFiles.Count) files" "Green"
-    Write-StatusLine "  ❌" "Missing: $($MissingFiles.Count) files" "Red"
+    Write-BoxedHeader "[ERROR] WORKSPACE VALIDATION FAILED" "Red" 50
+    Write-StatusLine "[LIST]" "Required files summary:" "Yellow"
+    Write-StatusLine "  [OK]" "Found: $($FoundFiles.Count) files" "Green"
+    Write-StatusLine "  [ERROR]" "Missing: $($MissingFiles.Count) files" "Red"
     Write-Host ""
-    Write-StatusLine "💡" "Please ensure all required files are present before running the local loader." "Yellow"
+    Write-StatusLine "[HINT]" "Please ensure all required files are present before running the local loader." "Yellow"
     Read-Host "Press Enter to exit"
     exit 1
 }
 
 Write-Host ""
-Write-StatusLine "✅" "Workspace validation completed successfully!" "Green"
-Write-StatusLine "📊" "All $($RequiredFiles.Count) required files found" "DarkGray"
+Write-StatusLine "[OK]" "Workspace validation completed successfully!" "Green"
+Write-StatusLine "[STATS]" "All $($RequiredFiles.Count) required files found" "DarkGray"
 
 # Function to load local script with error handling
 function Import-LocalScript {
@@ -96,23 +96,23 @@ function Import-LocalScript {
     $FullPath = Join-Path $WorkspacePath $RelativePath
 
     if ($Verbose) {
-        Write-StatusLine "📥" "Loading: $Description ($RelativePath)" "Cyan"
+        Write-StatusLine "[INBOX]" "Loading: $Description ($RelativePath)" "Cyan"
     } else {
-        Write-StatusLine "📥" "Loading: $Description" "Cyan"
+        Write-StatusLine "[INBOX]" "Loading: $Description" "Cyan"
     }
 
     try {
         . $FullPath
-        Write-StatusLine "✅" "$Description loaded successfully" "Green"
+        Write-StatusLine "[OK]" "$Description loaded successfully" "Green"
     } catch {
-        Write-StatusLine "❌" "ERROR loading $Description`: $($_.Exception.Message)" "Red"
+        Write-StatusLine "[ERROR]" "ERROR loading $Description`: $($_.Exception.Message)" "Red"
         throw $_
     }
 }
 
 try {
     Write-Host ""
-    Write-BoxedHeader "📋 LOADING LOCAL SCRIPTS" "Blue" 50
+    Write-BoxedHeader "[LIST] LOADING LOCAL SCRIPTS" "Blue" 50
 
     # Load scripts in dependency order
     Import-LocalScript -RelativePath "modules\config.ps1" -Description "Configuration Module"
@@ -120,19 +120,19 @@ try {
     Import-LocalScript -RelativePath "main.ps1" -Description "Main Script"
 
     Write-Host ""
-    Write-BoxedHeader "🎉 LOCAL SETUP COMPLETED!" "Green" 50
-    Write-StatusLine "✅" "All local scripts loaded successfully!" "Green"
-    Write-StatusLine "🔧" "Development environment ready" "Cyan"
+    Write-BoxedHeader "[SUCCESS] LOCAL SETUP COMPLETED!" "Green" 50
+    Write-StatusLine "[OK]" "All local scripts loaded successfully!" "Green"
+    Write-StatusLine "[FIX]" "Development environment ready" "Cyan"
 
 } catch {
     Write-Host ""
-    Write-BoxedHeader "❌ LOADING FAILED" "Red" 40
-    Write-StatusLine "💥" "Failed to load local scripts: $($_.Exception.Message)" "Red"
+    Write-BoxedHeader "[ERROR] LOADING FAILED" "Red" 40
+    Write-StatusLine "[ALERT]" "Failed to load local scripts: $($_.Exception.Message)" "Red"
     Write-Host ""
-    Write-StatusLine "💡" "Troubleshooting tips:" "Yellow"
-    Write-StatusLine "  🔍" "Check file permissions" "Cyan"
-    Write-StatusLine "  📝" "Verify script syntax" "Cyan"
-    Write-StatusLine "  🔄" "Ensure PowerShell execution policy allows local scripts" "Cyan"
+    Write-StatusLine "[HINT]" "Troubleshooting tips:" "Yellow"
+    Write-StatusLine "  [SEARCH]" "Check file permissions" "Cyan"
+    Write-StatusLine "  [NOTE]" "Verify script syntax" "Cyan"
+    Write-StatusLine "  [REFRESH]" "Ensure PowerShell execution policy allows local scripts" "Cyan"
     Write-Host ""
     Read-Host "Press Enter to exit"
     exit 1

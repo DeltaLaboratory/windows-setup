@@ -1,17 +1,17 @@
 # Load dependencies - this script should only be called from main.ps1 or other scripts that have already loaded config and utils
 
-Write-BoxedHeader "🛡️ SECURITY HARDENING CONFIGURATION" "Red" 60
+Write-BoxedHeader "[SHIELD] SECURITY HARDENING CONFIGURATION" "Red" 60
 
 $progressIdHardening = $Global:PROGRESS_IDS.Hardening
-$hardeningTotalSteps = 2
+$hardeningTotalSteps = 3
 $hardeningCurrentStep = 0
 
-Write-StatusLine "🔒" "Applying security hardening configurations..." "Yellow"
-Write-StatusLine "📊" "Total Security Groups: $hardeningTotalSteps" "DarkGray"
+Write-StatusLine "[LOCKED]" "Applying security hardening configurations..." "Yellow"
+Write-StatusLine "[STATS]" "Total Security Groups: $hardeningTotalSteps" "DarkGray"
 Write-Host ""
 
 $hardeningCurrentStep++; $statusMessage = "Setting Registry: BitLocker Config..."; Write-Progress -Activity "Hardening Registry Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($hardeningCurrentStep / $hardeningTotalSteps) * 100))) -Id $progressIdHardening
-Write-SectionHeader "BITLOCKER ENCRYPTION SETTINGS" "🔐"
+Write-SectionHeader "BITLOCKER ENCRYPTION SETTINGS" "[SECURE]"
 I $statusMessage
 Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\FVE" -Name "EncryptionMethodWithXtsOs" -Value 6
 Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\FVE" -Name "DisableExternalDMAUnderLock" -Value 1
@@ -28,11 +28,11 @@ Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\FVE" -Name "MinimumPI
 Write-Success "BitLocker encryption settings configured"
 
 $hardeningCurrentStep++; $statusMessage = "Setting Registry: Exploit Prevention Config..."; Write-Progress -Activity "Hardening Registry Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($hardeningCurrentStep / $hardeningTotalSteps) * 100))) -Id $progressIdHardening
-Write-SectionHeader "WINDOWS DEFENDER & EXPLOIT PROTECTION" "🛡️"
+Write-SectionHeader "WINDOWS DEFENDER & EXPLOIT PROTECTION" "[SHIELD]"
 I $statusMessage
 
 # Windows Defender Core Settings
-Write-StatusLine "🔍" "Configuring Windows Defender settings..." "Cyan"
+Write-StatusLine "[SEARCH]" "Configuring Windows Defender settings..." "Cyan"
 Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "DisableAntiSpyware" -Value 0
 Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "PUAProtection" -Value 1
 Set-RegistryString -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Exclusions" -Name "Exclusions_Extensions" -Value ""
@@ -43,7 +43,7 @@ Set-RegistryString -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Exc
 Set-RegistryString -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Policy Manager" -Name "ExcludedProcesses" -Value ""
 
 # Cloud Protection & Real-time Monitoring
-Write-StatusLine "☁️" "Configuring cloud protection and real-time monitoring..." "Cyan"
+Write-StatusLine "[CLOUD]" "Configuring cloud protection and real-time monitoring..." "Cyan"
 Set-RegistryDword -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet" -Name "SpynetReporting" -Value 2
 Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Spynet" -Name "DisableBlockAtFirstSeen" -Value 0
 Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Spynet" -Name "SubmitSamplesConsent" -Value 0
@@ -57,7 +57,7 @@ Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Scan
 Set-RegistryDword -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" -Name "MP_FORCE_USE_SANDBOX" -Value 1
 
 # Attack Surface Reduction Rules
-Write-StatusLine "⚔️" "Configuring Attack Surface Reduction rules..." "Cyan"
+Write-StatusLine "[DEFENSE]" "Configuring Attack Surface Reduction rules..." "Cyan"
 Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR" -Name "ExploitGuard_ASR_Rules" -Value 1
 Set-RegistryDword -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Policy Manager" -Name "ASRRules" -Value 1
 # Individual ASR Rules
@@ -81,13 +81,21 @@ Set-RegistryString -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Win
 Set-RegistryString -Path "HKLM:\Software\Policies\Microsoft\Windows Defender\Policy Manager" -Name "ASROnlyExclusions" -Value ""
 
 # Network Protection & Application Guard
-Write-StatusLine "🌐" "Configuring network protection and application guard..." "Cyan"
+Write-StatusLine "[NET]" "Configuring network protection and application guard..." "Cyan"
 Set-RegistryDword -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Windows Defender Exploit Guard\Network Protection" -Name "EnableNetworkProtection" -Value 1
 Set-RegistryDword -Path "HKLM:\SOFTWARE\Policies\Microsoft\AppHVSI" -Name "AllowAppHVSI_ProviderSet" -Value 3
 Set-RegistryDword -Path "HKLM:\SOFTWARE\Policies\Microsoft\AppHVSI" -Name "AuditApplicationGuard" -Value 1
 
 Write-Success "Windows Defender & Exploit Protection configured"
 
+$hardeningCurrentStep++; $statusMessage = "Setting Registry: Logon Screen Options..."; Write-Progress -Activity "Hardening Registry Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($hardeningCurrentStep / $hardeningTotalSteps) * 100))) -Id $progressIdHardening
+Write-SectionHeader "LOGON EXPERIENCE HARDENING" "[LIST]"
+I $statusMessage
+
+Write-StatusLine "[FIX]" "Enabling shutdown option on secure logon screen..." "Cyan"
+Set-RegistryDword -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ShutdownWithoutLogon" -Value 1
+Write-Success "Shutdown option enabled for logon screen"
+
 Write-Progress -Activity "Hardening Registry Configuration" -Completed -Id $progressIdHardening
 Write-Host ""
-Write-BoxedHeader "✅ SECURITY HARDENING COMPLETED" "Green" 50
+Write-BoxedHeader "[OK] SECURITY HARDENING COMPLETED" "Green" 50

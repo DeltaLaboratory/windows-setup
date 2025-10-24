@@ -17,9 +17,9 @@ function Write-BoxedHeader {
     $rightPad = " " * [Math]::Ceiling($padding)
 
     Write-Host ""
-    Write-Host ("┌" + "─" * ($Width - 2) + "┐") -ForegroundColor $Color
-    Write-Host ("│" + $leftPad + $Title + $rightPad + "│") -ForegroundColor $Color
-    Write-Host ("└" + "─" * ($Width - 2) + "┘") -ForegroundColor $Color
+    Write-Host ("+" + "-" * ($Width - 2) + "+") -ForegroundColor $Color
+    Write-Host ("|" + $leftPad + $Title + $rightPad + "|") -ForegroundColor $Color
+    Write-Host ("+" + "-" * ($Width - 2) + "+") -ForegroundColor $Color
     Write-Host ""
 }
 
@@ -40,11 +40,11 @@ function Write-ProgressStep {
     )
 
     $icon = switch ($Status) {
-        "IN_PROGRESS" { "⚡" }
-        "SUCCESS" { "✅" }
-        "ERROR" { "❌" }
-        "WARNING" { "⚠️" }
-        default { "•" }
+        "IN_PROGRESS" { "[POWER]" }
+        "SUCCESS" { "[OK]" }
+        "ERROR" { "[ERROR]" }
+        "WARNING" { "[WARN]" }
+        default { "-" }
     }
 
     $color = switch ($Status) {
@@ -127,33 +127,33 @@ try {
     Clear-Host
     
     # Main Header
-    Write-BoxedHeader "🛡️ DISABLE WINDOWS DEFENDER REAL-TIME PROTECTION" "Red" 70
+    Write-BoxedHeader "[SHIELD] DISABLE WINDOWS DEFENDER REAL-TIME PROTECTION" "Red" 70
     
     # Security Warning
     Write-Host ""
-    Write-StatusLine "⚠️" "WARNING: This script will disable Windows Defender real-time protection" "Yellow"
-    Write-StatusLine "🔓" "This action reduces your system's security against malware" "Yellow"
-    Write-StatusLine "🛡️" "Other security features (cloud protection, ASR rules) remain active" "Cyan"
-    Write-StatusLine "💡" "Only proceed if you understand the security implications" "Yellow"
-    Write-StatusLine "🔧" "Use 'enable-defender-realtime.ps1' to restore full protection" "Cyan"
+    Write-StatusLine "[WARN]" "WARNING: This script will disable Windows Defender real-time protection" "Yellow"
+    Write-StatusLine "[UNLOCK]" "This action reduces your system's security against malware" "Yellow"
+    Write-StatusLine "[SHIELD]" "Other security features (cloud protection, ASR rules) remain active" "Cyan"
+    Write-StatusLine "[HINT]" "Only proceed if you understand the security implications" "Yellow"
+    Write-StatusLine "[FIX]" "Use 'enable-defender-realtime.ps1' to restore full protection" "Cyan"
     Write-Host ""
     
     # Confirm action
     $confirmation = Read-Host "Do you want to continue? (Type 'YES' to confirm)"
     if ($confirmation -ne "YES") {
-        Write-StatusLine "❌" "Operation cancelled by user" "Red"
+        Write-StatusLine "[ERROR]" "Operation cancelled by user" "Red"
         exit 1
     }
     
     Write-Host ""
-    Write-BoxedHeader "🔧 DISABLING REAL-TIME PROTECTION" "Yellow" 50
+    Write-BoxedHeader "[FIX] DISABLING REAL-TIME PROTECTION" "Yellow" 50
     
     # Check administrator privileges
     Write-ProgressStep "Checking administrator privileges..." "IN_PROGRESS"
     if (-not (Test-IsAdministrator)) {
         Write-ProgressStep "Administrator privileges required" "ERROR"
-        Write-StatusLine "❌" "This script must be run as Administrator" "Red"
-        Write-StatusLine "💡" "Right-click and select 'Run as Administrator'" "Cyan"
+        Write-StatusLine "[ERROR]" "This script must be run as Administrator" "Red"
+        Write-StatusLine "[HINT]" "Right-click and select 'Run as Administrator'" "Cyan"
         exit 1
     }
     Write-ProgressStep "Administrator privileges confirmed" "SUCCESS"
@@ -206,29 +206,29 @@ try {
     # Display results
     Write-Host ""
     if ($successCount -gt 0) {
-        Write-BoxedHeader "✅ REAL-TIME PROTECTION DISABLED" "Green" 50
-        Write-StatusLine "🎯" "Windows Defender real-time protection has been disabled" "Green"
-        Write-StatusLine "📊" "Methods used: $($methods -join ', ')" "Cyan"
-        Write-StatusLine "🔄" "Changes take effect immediately" "Green"
+        Write-BoxedHeader "[OK] REAL-TIME PROTECTION DISABLED" "Green" 50
+        Write-StatusLine "[TARGET]" "Windows Defender real-time protection has been disabled" "Green"
+        Write-StatusLine "[STATS]" "Methods used: $($methods -join ', ')" "Cyan"
+        Write-StatusLine "[REFRESH]" "Changes take effect immediately" "Green"
     } else {
-        Write-BoxedHeader "❌ OPERATION FAILED" "Red" 50
-        Write-StatusLine "❌" "Failed to disable Windows Defender real-time protection" "Red"
-        Write-StatusLine "💡" "Try running as Administrator or check system policies" "Yellow"
+        Write-BoxedHeader "[ERROR] OPERATION FAILED" "Red" 50
+        Write-StatusLine "[ERROR]" "Failed to disable Windows Defender real-time protection" "Red"
+        Write-StatusLine "[HINT]" "Try running as Administrator or check system policies" "Yellow"
     }
     
     Write-Host ""
-    Write-StatusLine "⚠️" "Security Reminder: Real-time protection is now disabled" "Yellow"
-    Write-StatusLine "🛡️" "Other security features (cloud protection, ASR rules) remain active" "Cyan"
-    Write-StatusLine "🔧" "To restore full protection, run 'enable-defender-realtime.ps1'" "Cyan"
+    Write-StatusLine "[WARN]" "Security Reminder: Real-time protection is now disabled" "Yellow"
+    Write-StatusLine "[SHIELD]" "Other security features (cloud protection, ASR rules) remain active" "Cyan"
+    Write-StatusLine "[FIX]" "To restore full protection, run 'enable-defender-realtime.ps1'" "Cyan"
     
 } catch {
     Write-Host ""
-    Write-BoxedHeader "❌ UNEXPECTED ERROR" "Red" 50
-    Write-StatusLine "❌" "An unexpected error occurred: $($_.Exception.Message)" "Red"
-    Write-StatusLine "💡" "Please check the error details and try again" "Yellow"
+    Write-BoxedHeader "[ERROR] UNEXPECTED ERROR" "Red" 50
+    Write-StatusLine "[ERROR]" "An unexpected error occurred: $($_.Exception.Message)" "Red"
+    Write-StatusLine "[HINT]" "Please check the error details and try again" "Yellow"
     exit 1
 }
 
 Write-Host ""
-Write-StatusLine "✨" "Script execution completed" "Green"
+Write-StatusLine "[DONE]" "Script execution completed" "Green"
 Read-Host "Press Enter to continue"

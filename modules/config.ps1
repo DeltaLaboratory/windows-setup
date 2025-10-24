@@ -9,7 +9,6 @@ $Global:REPO_NAME = "windows-setup"
 
 # Module URLs
 $Global:UTILS_URL = "$Global:REPO_BASE_URL/modules/utils.ps1"
-$Global:GUI_PROGRESS_URL = "$Global:REPO_BASE_URL/modules/gui-progress.ps1"
 
 # Configuration Script URLs
 $Global:REGISTRY_SYSTEM_URL = "$Global:REPO_BASE_URL/configure/registry/system.ps1"
@@ -19,7 +18,6 @@ $Global:REGISTRY_MISC_URL = "$Global:REPO_BASE_URL/configure/registry/misc.ps1"
 $Global:SETTINGS_GENERAL_URL = "$Global:REPO_BASE_URL/configure/settings/settings.ps1"
 $Global:SETTINGS_POWERSHELL_URL = "$Global:REPO_BASE_URL/configure/settings/powershell.ps1"
 $Global:WINGET_CONFIG_URL = "$Global:REPO_BASE_URL/configure/winget.ps1"
-$Global:SCOOP_CONFIG_URL = "$Global:REPO_BASE_URL/configure/scoop.ps1"
 
 # Progress Bar ID Assignments (to prevent conflicts)
 $Global:PROGRESS_IDS = @{

@@ -1,4 +1,4 @@
-$systemTotalSteps = 11
+$systemTotalSteps = 10
 $systemCurrentStep = 0
 $progressIdSystem = $Global:PROGRESS_IDS.System # Using centralized progress ID
 
@@ -21,7 +21,6 @@ $systemCurrentStep++; $statusMessage = "Setting Registry: Explorer Advanced Sett
 I $statusMessage
 Set-RegistryDword -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced" -Name "HideDrivesWithNoMedia" -Value 0
 Set-RegistryDword -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced" -Name "Hidden" -Value 0
-Set-RegistryDword -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced" -Name "ShowSuperHidden" -Value 0
 Set-RegistryDword -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced" -Name "HideFileExt" -Value 0
 Set-RegistryDword -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings" -Name "TaskbarEndTask" -Value 1
 
@@ -48,10 +47,6 @@ Set-RegistryDword -Path "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer
 $systemCurrentStep++; $statusMessage = "Setting Registry: AppModelUnlock..."; Write-Progress -Activity "System Registry Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($systemCurrentStep / $systemTotalSteps) * 100))) -Id $progressIdSystem
 I $statusMessage
 Set-RegistryDword -Path "HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\AppModelUnlock" -Name "AllowDevelopmentWithoutDevLicense" -Value 1
-
-$systemCurrentStep++; $statusMessage = "Setting Registry: LogonUI Background..."; Write-Progress -Activity "System Registry Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($systemCurrentStep / $systemTotalSteps) * 100))) -Id $progressIdSystem
-I $statusMessage
-Set-RegistryDword -Path "HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\Background" -Name "OEMBackground" -Value 0
 
 $systemCurrentStep++; $statusMessage = "Setting Registry: Sudo Config..."; Write-Progress -Activity "System Registry Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($systemCurrentStep / $systemTotalSteps) * 100))) -Id $progressIdSystem
 I $statusMessage

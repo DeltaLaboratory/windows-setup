@@ -1,27 +1,27 @@
 # Load dependencies - this script should only be called from main.ps1 or other scripts that have already loaded config and utils
 
-Write-BoxedHeader "🌐 BROWSER CONFIGURATION" "Blue" 60
+Write-BoxedHeader "[NET] BROWSER CONFIGURATION" "Blue" 60
 
 $progressIdBrowser = $Global:PROGRESS_IDS.Browser
 $browserTotalSteps = 5
 $browserCurrentStep = 0
 
-Write-StatusLine "🔧" "Configuring Microsoft Edge browser settings..." "Yellow"
-Write-StatusLine "📊" "Total Configuration Groups: $browserTotalSteps" "DarkGray"
+Write-StatusLine "[FIX]" "Configuring Microsoft Edge browser settings..." "Yellow"
+Write-StatusLine "[STATS]" "Total Configuration Groups: $browserTotalSteps" "DarkGray"
 Write-Host ""
 
 $browserCurrentStep++; $statusMessage = "Setting Registry: Edge Config..."; Write-Progress -Activity "Browser Registry Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($browserCurrentStep / $browserTotalSteps) * 100))) -Id $progressIdBrowser
-Write-SectionHeader "EDGE BASIC CONFIGURATION" "🏠"
+Write-SectionHeader "EDGE BASIC CONFIGURATION" "[HOME]"
 I $statusMessage
 Set-RegistryString -Path "HKCU:\\Software\\Microsoft\\Edge\\Defaults" -Name "is_startup_page_recommended" -Value "0"
 Set-RegistryString -Path "HKCU:\\Software\\Microsoft\\Edge\\Defaults" -Name "is_dse_recommended" -Value "0"
 Write-Success "Edge basic configuration completed"
 
 $browserCurrentStep++; $statusMessage = "Setting Registry: Edge Security..."; Write-Progress -Activity "Browser Registry Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($browserCurrentStep / $browserTotalSteps) * 100))) -Id $progressIdBrowser
-Write-SectionHeader "EDGE SECURITY & PRIVACY SETTINGS" "🔒"
+Write-SectionHeader "EDGE SECURITY & PRIVACY SETTINGS" "[LOCKED]"
 I $statusMessage
 
-Write-StatusLine "🛡️" "Configuring security policies..." "Cyan"
+Write-StatusLine "[SHIELD]" "Configuring security policies..." "Cyan"
 Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge" -Name "InternetExplorerIntegrationReloadInIEModeAllowed" -Value 0
 Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge" -Name "SSLErrorOverrideAllowed" -Value 1
 Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge" -Name "InternetExplorerIntegrationZoneIdentifierMhtFileAllowed" -Value 0
@@ -35,11 +35,11 @@ Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge" -Name "Nati
 Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge" -Name "InsecurePrivateNetworkRequestsAllowed" -Value 1
 Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge" -Name "TyposquattingCheckerEnabled" -Value 1
 
-Write-StatusLine "🌐" "Configuring DNS over HTTPS..." "Cyan"
-Set-RegistryString -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge" -Name "DnsOverHttpsMode" -Value "secure"
-Set-RegistryString -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge" -Name "DnsOverHttpsTemplates" -Value "https://cloudflare-dns.com/dns-query"
+Write-StatusLine "[NET]" "Configuring DNS over HTTPS..." "Cyan"
+Set-RegistryString -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\\Recommended" -Name "DnsOverHttpsMode" -Value "secure"
+Set-RegistryString -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\\Recommended" -Name "DnsOverHttpsTemplates" -Value "https://cloudflare-dns.com/dns-query"
 
-Write-StatusLine "🔐" "Configuring privacy settings..." "Cyan"
+Write-StatusLine "[SECURE]" "Configuring privacy settings..." "Cyan"
 Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge" -Name "AutomaticHttpsDefault" -Value 2
 Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge" -Name "AutoImportAtFirstRun" -Value 4
 Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge" -Name "DiagnosticData" -Value 0
@@ -54,9 +54,9 @@ Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge" -Name "Edge
 Write-Success "Edge security & privacy settings configured"
 
 $browserCurrentStep++; $statusMessage = "Setting Registry: Edge Fake MDM..."; Write-Progress -Activity "Browser Registry Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($browserCurrentStep / $browserTotalSteps) * 100))) -Id $progressIdBrowser
-Write-SectionHeader "EDGE MDM SIMULATION" "🏢"
+Write-SectionHeader "EDGE MDM SIMULATION" "[WORK]"
 I $statusMessage
-Write-StatusLine "⚙️" "Setting up fake MDM enrollment for enterprise policies..." "Cyan"
+Write-StatusLine "[CONFIG]" "Setting up fake MDM enrollment for enterprise policies..." "Cyan"
 Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Microsoft\\Enrollments\\FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF" -Name "EnrollmentState" -Value 1
 Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Microsoft\\Enrollments\\FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF" -Name "EnrollmentType" -Value 0
 Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Microsoft\\Enrollments\\FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF" -Name "IsFederated" -Value 0
@@ -68,9 +68,9 @@ Set-RegistryString -Path "HKLM:\\SOFTWARE\\Microsoft\\Provisioning\\OMADM\\Accou
 Write-Success "Edge MDM simulation configured"
 
 $browserCurrentStep++; $statusMessage = "Setting Registry: Edge Search Engine..."; Write-Progress -Activity "Browser Registry Configuration" -Status $statusMessage -PercentComplete ([Math]::Min(100, (($browserCurrentStep / $browserTotalSteps) * 100))) -Id $progressIdBrowser
-Write-SectionHeader "SEARCH ENGINE & IMPORT SETTINGS" "🔍"
+Write-SectionHeader "SEARCH ENGINE & IMPORT SETTINGS" "[SEARCH]"
 I $statusMessage
-Write-StatusLine "🔍" "Configuring Google as default search engine..." "Cyan"
+Write-StatusLine "[SEARCH]" "Configuring Google as default search engine..." "Cyan"
 Set-RegistryString -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\\Recommended" -Name "DefaultSearchProviderName" -Value "Google"
 Set-RegistryString -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\\Recommended" -Name "DefaultSearchProviderSearchURL" -Value "{google:baseURL}search?q={searchTerms}&{google:RLZ}{google:originalQueryForSuggestion}{google:assistedQueryStats}{google:searchFieldtrialParameter}{google:searchClient}{google:sourceId}ie={inputEncoding}"
 Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\\Recommended" -Name "DefaultSearchProviderEnabled" -Value 1
@@ -78,7 +78,7 @@ Set-RegistryString -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\\Recommende
 Set-RegistryString -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\\Recommended" -Name "DefaultSearchProviderImageURL" -Value "{google:baseURL}searchbyimage/upload"
 Set-RegistryString -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\\Recommended" -Name "DefaultSearchProviderImageURLPostParams" -Value "encoded_image={google:imageThumbnail},image_url={google:imageURL},sbisrc={google:imageSearchSource},original_width={google:imageOriginalWidth},original_height={google:imageOriginalHeight}"
 
-Write-StatusLine "📥" "Disabling data import from other browsers..." "Cyan"
+Write-StatusLine "[INBOX]" "Disabling data import from other browsers..." "Cyan"
 Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\\Recommended" -Name "ImportPaymentInfo" -Value 0
 Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\\Recommended" -Name "ImportHistory" -Value 0
 Set-RegistryDword -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\\Recommended" -Name "ImportSavedPasswords" -Value 0
@@ -97,4 +97,4 @@ $browserCurrentStep++; $statusMessage = "Browser configuration complete."; Write
 
 Write-Progress -Activity "Browser Registry Configuration" -Completed -Id $progressIdBrowser
 Write-Host ""
-Write-BoxedHeader "✅ BROWSER CONFIGURATION COMPLETED" "Green" 50
+Write-BoxedHeader "[OK] BROWSER CONFIGURATION COMPLETED" "Green" 50

@@ -6,7 +6,6 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 param(
     [switch]$ForceDownload,
     [switch]$OfflineMode,
-    [switch]$UseGUI,
     [string]$CacheDir,
     [string]$Version = "main"
 )
@@ -24,7 +23,6 @@ $REPO_BASE_URL = "https://raw.githubusercontent.com/DeltaLaboratory/windows-setu
 $MAIN_SCRIPT_URL = "$REPO_BASE_URL/main.ps1"
 $CONFIG_SCRIPT_URL = "$REPO_BASE_URL/modules/config.ps1"
 $UTILS_SCRIPT_URL = "$REPO_BASE_URL/modules/utils.ps1"
-$GUI_PROGRESS_SCRIPT_URL = "$REPO_BASE_URL/modules/gui-progress.ps1"
 
 # TUI Helper Functions
 function Write-BoxedHeader {
@@ -39,9 +37,9 @@ function Write-BoxedHeader {
     $rightPad = " " * [Math]::Ceiling($padding)
 
     Write-Host ""
-    Write-Host ("┌" + "─" * ($Width - 2) + "┐") -ForegroundColor $Color
-    Write-Host ("│" + $leftPad + $Title + $rightPad + "│") -ForegroundColor $Color
-    Write-Host ("└" + "─" * ($Width - 2) + "┘") -ForegroundColor $Color
+    Write-Host ("+" + "-" * ($Width - 2) + "+") -ForegroundColor $Color
+    Write-Host ("|" + $leftPad + $Title + $rightPad + "|") -ForegroundColor $Color
+    Write-Host ("+" + "-" * ($Width - 2) + "+") -ForegroundColor $Color
     Write-Host ""
 }
 
@@ -62,11 +60,11 @@ function Write-ProgressStep {
     )
 
     $icon = switch ($Status) {
-        "IN_PROGRESS" { "⚡" }
-        "SUCCESS" { "✅" }
-        "ERROR" { "❌" }
-        "WARNING" { "⚠️" }
-        default { "•" }
+        "IN_PROGRESS" { "[POWER]" }
+        "SUCCESS" { "[OK]" }
+        "ERROR" { "[ERROR]" }
+        "WARNING" { "[WARN]" }
+        default { "-" }
     }
 
     $color = switch ($Status) {
@@ -145,38 +143,34 @@ $script:LoaderWarnings = @()
 function Add-LoaderError {
     param([string]$Message)
     $script:LoaderErrors += $Message
-    Write-StatusLine "❌" "ERROR: $Message" "Red"
+    Write-StatusLine "[ERROR]" "ERROR: $Message" "Red"
 }
 
 function Add-LoaderWarning {
     param([string]$Message)
     $script:LoaderWarnings += $Message
-    Write-StatusLine "⚠️" "WARNING: $Message" "Yellow"
+    Write-StatusLine "[WARN]" "WARNING: $Message" "Yellow"
 }
 
 try {
     Clear-Host
 
     # Main Header
-    Write-BoxedHeader "🚀 WINDOWS SETUP LOADER v2.0" "Cyan" 60
+    Write-BoxedHeader "[START] WINDOWS SETUP LOADER v2.0" "Cyan" 60
 
-    Write-StatusLine "📁" "Cache Directory: $CacheDir" "DarkGray"
-    Write-StatusLine "🌐" "Repository: $REPO_BASE_URL" "DarkGray"
-    Write-StatusLine "📦" "Version: $Version" "DarkGray"
+    Write-StatusLine "[DIR]" "Cache Directory: $CacheDir" "DarkGray"
+    Write-StatusLine "[NET]" "Repository: $REPO_BASE_URL" "DarkGray"
+    Write-StatusLine "[PACKAGE]" "Version: $Version" "DarkGray"
     
-    if ($UseGUI) {
-        Write-StatusLine "🖥️" "GUI Mode: ON" "Magenta"
-    }
-
     if ($ForceDownload) {
-        Write-StatusLine "🔄" "Force Download Mode: ON" "Yellow"
+        Write-StatusLine "[REFRESH]" "Force Download Mode: ON" "Yellow"
     }
     if ($OfflineMode) {
-        Write-StatusLine "📴" "Offline Mode: ON" "Magenta"
+        Write-StatusLine "[OFFLINE]" "Offline Mode: ON" "Magenta"
     }
 
     Write-Host ""
-    Write-BoxedHeader "📋 LOADING SCRIPTS" "Green" 50
+    Write-BoxedHeader "[LIST] LOADING SCRIPTS" "Green" 50
 
     # Load configuration first
     $configSuccess = $true
@@ -208,38 +202,6 @@ try {
         Write-ProgressStep "Utilities module failed" "ERROR"
     }
 
-    # Load GUI progress module if GUI mode is requested
-    $guiProgressSuccess = $true
-    if ($UseGUI) {
-        Write-ProgressStep "Loading GUI progress module..." "IN_PROGRESS"
-        try {
-            # Check if GUI is available on this system
-            $guiAvailable = $true
-            try {
-                Add-Type -AssemblyName System.Windows.Forms -ErrorAction Stop
-                Add-Type -AssemblyName System.Drawing -ErrorAction Stop
-            } catch {
-                $guiAvailable = $false
-            }
-            
-            if (-not $guiAvailable) {
-                throw "Windows Forms components not available on this system"
-            }
-            
-            $GuiProgressContent = Get-CachedScript -Url $GUI_PROGRESS_SCRIPT_URL -FileName "gui-progress.ps1"
-            if (-not (Test-ScriptIntegrity $GuiProgressContent)) {
-                throw "GUI progress script integrity check failed"
-            }
-            Write-ProgressStep "GUI progress module validated" "SUCCESS"
-        } catch {
-            $guiProgressSuccess = $false
-            Add-LoaderWarning "GUI progress loading failed: $($_.Exception.Message)"
-            Add-LoaderWarning "Falling back to console-only mode"
-            Write-ProgressStep "GUI progress module failed, using console" "WARNING"
-            $UseGUI = $false
-        }
-    }
-
     # Load main script
     $mainSuccess = $true
     Write-ProgressStep "Loading main script..." "IN_PROGRESS"
@@ -259,16 +221,16 @@ try {
     
     # Check if we can proceed with execution
     if (-not $configSuccess -or -not $utilsSuccess -or -not $mainSuccess) {
-        Write-BoxedHeader "⚠️ PARTIAL LOADING COMPLETED" "Yellow" 50
-        Write-StatusLine "🚫" "Some scripts failed to load. Setup cannot continue." "Red"
+        Write-BoxedHeader "[WARN] PARTIAL LOADING COMPLETED" "Yellow" 50
+        Write-StatusLine "[BLOCKED]" "Some scripts failed to load. Setup cannot continue." "Red"
         
         Write-Host ""
-        Write-StatusLine "💡" "Troubleshooting Options:" "Yellow"
-        Write-StatusLine "  🔄" "Run with -ForceDownload to refresh cache" "Cyan"
-        Write-StatusLine "  📴" "Check your internet connection" "Cyan"
-        Write-StatusLine "  📁" "Verify cache directory permissions" "Cyan"
+        Write-StatusLine "[HINT]" "Troubleshooting Options:" "Yellow"
+        Write-StatusLine "  [REFRESH]" "Run with -ForceDownload to refresh cache" "Cyan"
+        Write-StatusLine "  [OFFLINE]" "Check your internet connection" "Cyan"
+        Write-StatusLine "  [DIR]" "Verify cache directory permissions" "Cyan"
     } else {
-        Write-BoxedHeader "🎯 EXECUTING SETUP" "Magenta" 50
+        Write-BoxedHeader "[TARGET] EXECUTING SETUP" "Magenta" 50
 
         # Execute the scripts in order
         try {
@@ -289,20 +251,6 @@ try {
             Write-ProgressStep "Utilities had warnings" "WARNING"
         }
 
-        # Execute GUI progress module if loaded
-        if ($UseGUI -and $guiProgressSuccess) {
-            try {
-                Write-ProgressStep "Executing GUI progress module..." "IN_PROGRESS"
-                Invoke-Expression $GuiProgressContent
-                Enable-ProgressGUI
-                Write-ProgressStep "GUI progress module executed" "SUCCESS"
-            } catch {
-                Add-LoaderWarning "GUI progress module execution had issues: $($_.Exception.Message)"
-                Write-ProgressStep "GUI progress module had warnings" "WARNING"
-                $UseGUI = $false
-            }
-        }
-
         try {
             Write-ProgressStep "Executing main setup..." "IN_PROGRESS"
             Invoke-Expression $MainContent
@@ -320,36 +268,36 @@ try {
 # Display final summary
 Write-Host ""
 if ($script:LoaderErrors.Count -eq 0 -and $script:LoaderWarnings.Count -eq 0) {
-    Write-BoxedHeader "🎉 LOADER COMPLETED SUCCESSFULLY!" "Green" 60
+    Write-BoxedHeader "[SUCCESS] LOADER COMPLETED SUCCESSFULLY!" "Green" 60
 } elseif ($script:LoaderErrors.Count -eq 0) {
-    Write-BoxedHeader "⚠️ LOADER COMPLETED WITH WARNINGS" "Yellow" 60
-    Write-StatusLine "⚠️" "$($script:LoaderWarnings.Count) warnings occurred during loading" "Yellow"
+    Write-BoxedHeader "[WARN] LOADER COMPLETED WITH WARNINGS" "Yellow" 60
+    Write-StatusLine "[WARN]" "$($script:LoaderWarnings.Count) warnings occurred during loading" "Yellow"
 } else {
-    Write-BoxedHeader "❌ LOADER COMPLETED WITH ERRORS" "Red" 60
-    Write-StatusLine "❌" "$($script:LoaderErrors.Count) errors and $($script:LoaderWarnings.Count) warnings occurred" "Red"
+    Write-BoxedHeader "[ERROR] LOADER COMPLETED WITH ERRORS" "Red" 60
+    Write-StatusLine "[ERROR]" "$($script:LoaderErrors.Count) errors and $($script:LoaderWarnings.Count) warnings occurred" "Red"
 }
 
 # Show errors and warnings if any
 if ($script:LoaderWarnings.Count -gt 0) {
     Write-Host ""
-    Write-StatusLine "⚠️" "Warnings:" "Yellow"
+    Write-StatusLine "[WARN]" "Warnings:" "Yellow"
     foreach ($warning in $script:LoaderWarnings) {
-        Write-StatusLine "  ▫️" $warning "Yellow"
+        Write-StatusLine "  -" $warning "Yellow"
     }
 }
 
 if ($script:LoaderErrors.Count -gt 0) {
     Write-Host ""
-    Write-StatusLine "❌" "Errors:" "Red"
+    Write-StatusLine "[ERROR]" "Errors:" "Red"
     foreach ($errorItem in $script:LoaderErrors) {
-        Write-StatusLine "  ▫️" $errorItem "Red"
+        Write-StatusLine "  -" $errorItem "Red"
     }
     Write-Host ""
-    Write-StatusLine "💡" "Troubleshooting Options:" "Yellow"
-    Write-StatusLine "  🔄" "Run with -ForceDownload to refresh cache" "Cyan"
-    Write-StatusLine "  📴" "Run with -OfflineMode to use only cached files" "Cyan"
-    Write-StatusLine "  🌐" "Check your internet connection" "Cyan"
-    Write-StatusLine "  📁" "Verify cache directory permissions" "Cyan"
+    Write-StatusLine "[HINT]" "Troubleshooting Options:" "Yellow"
+    Write-StatusLine "  [REFRESH]" "Run with -ForceDownload to refresh cache" "Cyan"
+    Write-StatusLine "  [OFFLINE]" "Run with -OfflineMode to use only cached files" "Cyan"
+    Write-StatusLine "  [NET]" "Check your internet connection" "Cyan"
+    Write-StatusLine "  [DIR]" "Verify cache directory permissions" "Cyan"
 }
 
 Write-Host ""

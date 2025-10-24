@@ -11,9 +11,9 @@ function Write-BoxedHeader {
     $rightPad = " " * [Math]::Ceiling($padding)
 
     Write-Host ""
-    Write-Host ("┌" + "─" * ($Width - 2) + "┐") -ForegroundColor $Color
-    Write-Host ("│" + $leftPad + $Title + $rightPad + "│") -ForegroundColor $Color
-    Write-Host ("└" + "─" * ($Width - 2) + "┘") -ForegroundColor $Color
+    Write-Host ("+" + "-" * ($Width - 2) + "+") -ForegroundColor $Color
+    Write-Host ("|" + $leftPad + $Title + $rightPad + "|") -ForegroundColor $Color
+    Write-Host ("+" + "-" * ($Width - 2) + "+") -ForegroundColor $Color
     Write-Host ""
 }
 
@@ -34,11 +34,11 @@ function Write-ProgressStep {
     )
 
     $icon = switch ($Status) {
-        "IN_PROGRESS" { "⚡" }
-        "SUCCESS" { "✅" }
-        "ERROR" { "❌" }
-        "WARNING" { "⚠️" }
-        default { "•" }
+        "IN_PROGRESS" { "[POWER]" }
+        "SUCCESS" { "[OK]" }
+        "ERROR" { "[ERROR]" }
+        "WARNING" { "[WARN]" }
+        default { "-" }
     }
 
     $color = switch ($Status) {
@@ -55,11 +55,11 @@ function Write-ProgressStep {
 function Write-SectionHeader {
     param(
         [string]$Title,
-        [string]$Icon = "📋"
+        [string]$Icon = "[LIST]"
     )
     Write-Host ""
     Write-Host " $Icon $Title " -ForegroundColor "Cyan" -BackgroundColor "DarkBlue"
-    Write-Host (" " + "─" * ($Title.Length + 4)) -ForegroundColor "Cyan"
+    Write-Host (" " + "-" * ($Title.Length + 4)) -ForegroundColor "Cyan"
 }
 
 # Enhanced Logging Functions
@@ -68,7 +68,7 @@ function I {
         [Parameter(Mandatory = $true)]
         [string]$Output
     )
-    Write-StatusLine "ℹ️" $Output "White"
+    Write-StatusLine "[INFO]" $Output "White"
 }
 
 function D {
@@ -76,7 +76,7 @@ function D {
         [Parameter(Mandatory = $true)]
         [string]$Output
     )
-    Write-StatusLine "🔍" $Output "DarkGray"
+    Write-StatusLine "[SEARCH]" $Output "DarkGray"
 }
 
 function E {
@@ -84,7 +84,7 @@ function E {
         [Parameter(Mandatory = $true)]
         [string]$Output
     )
-    Write-StatusLine "❌" $Output "Red"
+    Write-StatusLine "[ERROR]" $Output "Red"
 }
 
 function Write-Success {
@@ -92,7 +92,7 @@ function Write-Success {
         [Parameter(Mandatory = $true)]
         [string]$Output
     )
-    Write-StatusLine "✅" $Output "Green"
+    Write-StatusLine "[OK]" $Output "Green"
 }
 
 function Write-Warning {
@@ -100,7 +100,7 @@ function Write-Warning {
         [Parameter(Mandatory = $true)]
         [string]$Output
     )
-    Write-StatusLine "⚠️" $Output "Yellow"
+    Write-StatusLine "[WARN]" $Output "Yellow"
 }
 
 # Enhanced Registry Functions
@@ -222,10 +222,10 @@ function Install-WingetPackageIfNeeded {
         [string]$PackageName = $PackageId
     )
     if (Test-WingetPackageInstalled -PackageId $PackageId) {
-        Write-StatusLine "✅" "$PackageName is already installed" "Green"
+        Write-StatusLine "[OK]" "$PackageName is already installed" "Green"
         return $true
     } else {
-        Write-StatusLine "📦" "Installing $PackageName..." "Cyan"
+        Write-StatusLine "[PACKAGE]" "Installing $PackageName..." "Cyan"
         winget install $PackageId --accept-package-agreements --accept-source-agreements
         if ($LASTEXITCODE -eq 0) {
             Write-Success "$PackageName installed successfully!"
@@ -265,10 +265,10 @@ function Install-ScoopPackageIfNeeded {
         [string]$DisplayName = $PackageName
     )
     if (Test-ScoopPackageInstalled -PackageName $PackageName) {
-        Write-StatusLine "✅" "$DisplayName is already installed" "Green"
+        Write-StatusLine "[OK]" "$DisplayName is already installed" "Green"
         return $true
     } else {
-        Write-StatusLine "📦" "Installing $DisplayName..." "Cyan"
+        Write-StatusLine "[PACKAGE]" "Installing $DisplayName..." "Cyan"
         scoop install $PackageName
         if ($LASTEXITCODE -eq 0) {
             Write-Success "$DisplayName installed successfully!"
